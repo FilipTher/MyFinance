@@ -1,0 +1,55 @@
+.analytics-container {
+  padding-bottom: 50px;
+}
+
+.top-bar {
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.chart-section {
+  background-color: var(--bg-card);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.filters {
+  display: flex;
+  gap: 15px;
+}
+
+.select-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+select {
+  background-color: #444;
+  color: white;
+  border: 1px solid #555;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.chart-wrapper {
+  height: 300px;
+  width: 100%;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid #444;
+  margin: 30px 0;
+}

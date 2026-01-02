@@ -1,0 +1,99 @@
+<div class="page-layout">
+  
+  <aside class="filters-panel">
+    <div class="filter-header">
+      <h3>Filtry</h3>
+      <i class="material-icons icon">filter_alt</i>
+    </div>
+    <hr>
+
+    <div class="form-group">
+      <label>Můj filtr</label>
+      <input type="text" placeholder="Value" [(ngModel)]="filtry.hledat">
+    </div>
+
+    <div class="form-group">
+      <label>Hledat</label>
+      <input type="text" placeholder="Value">
+    </div>
+
+    <div class="form-group">
+      <label>Typ platby</label>
+      <select [(ngModel)]="filtry.typ">
+        <option value="vse">Value</option>
+        <option value="prijem">Příjem</option>
+        <option value="vydaj">Výdaj</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Kategorie</label>
+      <select [(ngModel)]="filtry.kategorie">
+        <option value="vse">Value</option>
+        <option value="jidlo">Jídlo</option>
+        <option value="auto">Auto</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <div class="slider-labels">
+        <label>Částka</label>
+        <span>0-MAX</span>
+      </div>
+      <input type="range" min="0" max="100000">
+    </div>
+
+  </aside>
+
+
+  <section class="results-panel">
+    
+    <div class="date-bar">
+      <h2>Historie transakcí</h2>
+      <div class="date-inputs">
+        <div class="date-group">
+          <span>Od</span>
+          <div class="fake-date-inputs">
+            <input type="text" placeholder="DD" class="date-small">
+            <input type="text" placeholder="MM" class="date-small">
+            <input type="text" placeholder="YYYY" class="date-large">
+          </div>
+        </div>
+        <span class="arrow">→</span>
+        <div class="date-group">
+          <span>Do</span>
+          <div class="fake-date-inputs">
+            <input type="text" placeholder="DD" class="date-small">
+            <input type="text" placeholder="MM" class="date-small">
+            <input type="text" placeholder="YYYY" class="date-large">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="transaction-list">
+      <div class="transaction-row" *ngFor="let item of transakce">
+        
+        <input type="checkbox" class="custom-checkbox" [(ngModel)]="item.vybrano">
+        
+        <i class="material-icons icon">{{ item.ikona }}</i>
+        
+        <div class="info">
+          <div class="name">{{ item.nazev }}</div>
+        </div>
+
+        <div class="type-badge">
+          <span class="dot green">●</span> Typ platby
+        </div>
+
+        <div class="desc" *ngIf="item.popis">{{ item.popis }}</div>
+
+        <div class="price" [style.color]="item.castka > 0 ? 'var(--accent-green)' : 'var(--accent-red)'">
+          {{ item.castka }} CZK
+          <div class="date-sub">{{ item.datum }}</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</div>

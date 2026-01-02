@@ -1,0 +1,57 @@
+<header class="top-bar">
+  <h1>Moje Cíle</h1>
+  <div class="actions">
+    <button class="btn-secondary">+ Přidat kategorii</button>
+    <button class="btn-secondary">+ Přidat cíl</button>
+  </div>
+</header>
+
+<div class="goals-container">
+
+  <div class="category-group" *ngFor="let kategorie of kategorieCilu">
+    
+    <div class="category-header">
+      {{ kategorie.nazev }}
+      <span class="material-icons icon">expand_less</span>
+    </div>
+
+    <div class="goal-row" *ngFor="let cil of kategorie.cile">
+      
+      <div class="goal-main">
+        <i class="material-icons icon">{{ cil.ikona }}</i>
+        <span class="goal-name">{{ cil.nazev }}</span>
+      </div>
+
+      <div class="status-icon">
+        <i class="material-symbols-rounded" 
+           [style.color]="getProcento(cil.nasetreno, cil.cil) >= 100 ? 'var(--accent-green)' : 'var(--accent-red)'">
+           {{ getProcento(cil.nasetreno, cil.cil) >= 100 ? 'check' : 'close' }}
+        </i>
+      </div>
+
+      <div class="progress-section">
+        <span class="percentage">{{ getProcento(cil.nasetreno, cil.cil) }}%</span>
+        
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" 
+               [style.width.%]="getProcento(cil.nasetreno, cil.cil)">
+          </div>
+        </div>
+        
+        <span class="percentage">100%</span>
+      </div>
+
+      <div class="goal-stats">
+        <div>Splněno: {{ getProcento(cil.nasetreno, cil.cil) }}%</div>
+        <div>Našetřeno: {{ cil.nasetreno }} CZK</div>
+        <div>Cílová částka: {{ cil.cil }} CZK</div>
+      </div>
+
+      <button class="edit-btn">
+        <i class="material-symbols-rounded">edit</i>
+      </button>
+
+    </div>
+  </div>
+
+</div>

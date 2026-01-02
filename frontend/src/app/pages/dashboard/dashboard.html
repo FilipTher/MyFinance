@@ -1,0 +1,33 @@
+<header class="top-bar">
+  <h1>Dashboard</h1>
+  <div class="user-info">👤 Jmeno Uzivatele</div>
+</header>
+
+<div class="balance-card">
+  <div>
+    <span>Aktuální zůstatek</span>
+    <div class="amount">4500 CZK</div>
+  </div>
+  <button class="add-btn">+ Přidat záznam</button>
+</div>
+
+<h3>Nedávná historie</h3>
+<div class="history-list">
+  
+  <div class="transaction-item" *ngFor="let item of transakce">
+
+    <i class="material-icons icon">{{ item.ikona }}</i>
+    
+    <div class="info">
+      <div class="name">{{ item.nazev }}</div>
+      <div class="desc" *ngIf="item.popis">{{ item.popis }}</div>
+    </div>
+
+    <div class="price" [style.color]="item.castka > 0 ? 'var(--accent-green)' : 'var(--accent-red)'">
+      {{ item.castka }} CZK
+      <div class="date">{{ item.datum }}</div>
+    </div>
+
+  </div>
+
+</div>

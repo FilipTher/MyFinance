@@ -1,0 +1,87 @@
+<header class="top-bar">
+  <h1>Můj profil</h1>
+</header>
+
+<div class="profile-container">
+
+  <div class="profile-card main-card">
+    <div class="avatar-circle">
+      <i class="material-icons big-icon">person</i>
+      <button class="edit-avatar-btn">
+        <i class="material-icons icon">photo_camera</i>
+      </button>
+    </div>
+    
+    <h2 class="user-name">{{ uzivatel.jmeno }}</h2>
+    <p class="user-role">{{ uzivatel.clenstvi }} Member</p>
+    
+    <hr class="divider">
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="stat-value">{{ uzivatel.pocetTransakci }}</span>
+        <span class="stat-label">Transakcí</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">12</span>
+        <span class="stat-label">Měsíců</span>
+      </div>
+    </div>
+
+    <button class="btn-logout" (click)="logout()">
+      <i class="material-icons icon">logout</i> Odhlásit se
+    </button>
+  </div>
+
+
+  <div class="profile-card details-card">
+    <div class="card-header">
+      <h3>Osobní údaje</h3>
+      <button class="btn-edit" (click)="prepnoutEditaci()" [class.active]="editace">
+        <i class="material-icons icon">{{ editace ? 'save' : 'edit' }}</i>
+        {{ editace ? 'Uložit' : 'Upravit' }}
+      </button>
+    </div>
+
+    <div class="form-grid">
+      
+      <div class="form-group">
+        <label>Celé jméno</label>
+        <div class="input-wrapper">
+          <i class="material-icons icon">badge</i>
+          <input type="text" [(ngModel)]="uzivatel.jmeno" [disabled]="!editace">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Emailová adresa</label>
+        <div class="input-wrapper">
+          <i class="material-icons icon">mail</i>
+          <input type="email" [(ngModel)]="uzivatel.email" [disabled]="!editace">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Telefon</label>
+        <div class="input-wrapper">
+          <i class="material-icons icon">call</i>
+          <input type="text" [(ngModel)]="uzivatel.telefon" [disabled]="!editace">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Datum registrace</label>
+        <div class="input-wrapper disabled-look">
+          <i class="material-icons icon">calendar_today</i>
+          <input type="text" [value]="uzivatel.registrace" disabled>
+        </div>
+      </div>
+
+    </div>
+
+    <h3 class="security-title">Bezpečnost</h3>
+    <button class="btn-secondary">Změnit heslo</button>
+
+  </div>
+
+</div>

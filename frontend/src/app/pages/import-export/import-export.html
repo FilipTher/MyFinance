@@ -1,0 +1,48 @@
+<header class="top-bar">
+  <h1>Import/Export</h1>
+</header>
+
+<div class="page-layout">
+
+  <aside class="side-menu">
+    <button [class.active]="activeTab === 'import'" (click)="setTab('import')">Import</button>
+    <button [class.active]="activeTab === 'export'" (click)="setTab('export')">Export</button>
+  </aside>
+
+  <section class="content-area">
+    
+    <div *ngIf="activeTab === 'import'" class="tab-content">
+      
+      <div class="drop-zone" (click)="fileInput.click()">
+        <input #fileInput type="file" hidden (change)="onFileSelected($event)">
+        
+        <div *ngIf="!fileName" class="placeholder">
+          <i class="material-icons big-icon">snippet_folder</i>
+          <p>Drag & Drop your file here</p>
+        </div>
+
+        <div *ngIf="fileName" class="file-info">
+          <span class="material-symbols-rounded big-icon">check_circle</span>
+          <p>{{ fileName }}</p>
+        </div>
+      </div>
+
+      <div class="bottom-bar">
+        <div class="divider"></div>
+        <button class="action-btn" [disabled]="!fileName" (click)="processFile()">
+          Import
+        </button>
+      </div>
+
+    </div>
+
+
+    <div *ngIf="activeTab === 'export'" class="tab-content center-content">
+      <i class="material-icons big-icon">file_download</i>
+      <p>Stáhněte si svá data ve formátu CSV</p>
+      <button class="export-btn">Stáhnout data</button>
+    </div>
+
+  </section>
+
+</div>

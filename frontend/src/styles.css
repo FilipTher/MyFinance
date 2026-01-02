@@ -1,1 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --bg-dark: #2d2d2d;       
+  --bg-sidebar: #222222;    
+  --bg-card: #3a3a3a;       
+  --text-main: #ffffff;     
+  --text-muted: #aaaaaa;   
+  --accent-green: #2ecc71;  
+  --accent-red: #e74c3c;    
+  --border-color: #444444;  
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+}

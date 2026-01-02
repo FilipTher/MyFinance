@@ -1,0 +1,44 @@
+.sidebar {
+  width: 250px;
+  background-color: var(--bg-sidebar);
+  height: 100%;
+  padding: 20px;
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  color: var(--text-main);
+  margin-bottom: 20px;
+}
+
+button {
+  background: #444;
+  border: none;
+  color: var(--text-muted);
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+button:hover {
+  background-color: rgba(255,255,255, 0.1);
+  color: var(--text-main);
+}
+
+button.active {
+  background-color: #444;
+  color: var(--text-main);
+  font-weight: bold;
+}
+
+hr {
+  border: 0;
+  border-bottom: 1px solid var(--border-color);
+  margin: 24px 0;
+}
