@@ -1,0 +1,63 @@
+<header class="top-bar">
+  <h1>Správa kategorií</h1>
+  <button class="btn-add" (click)="openModal()">+ Nová kategorie</button>
+</header>
+
+<div class="categories-container">
+  <h2>Vaše kategorie</h2>
+  
+  <div class="categories-list">
+    <div class="category-card" *ngFor="let category of categories">
+      <div class="category-header">
+        <div class="category-info">
+          <h3>{{ category.name }}</h3>
+          <p class="category-type" [class.type-expense]="category.type === 'expense'" [class.type-income]="category.type === 'income'">
+            {{ category.type === 'expense' ? 'Výdaj' : 'Příjem' }}
+          </p>
+        </div>
+        <div class="category-actions">
+          <button class="btn-edit" (click)="openEditModal(category)">Upravit</button>
+          <button class="btn-delete" (click)="deleteCategory(category.id!)">Smazat</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="categories.length === 0">
+      <p>Nemáš žádné kategorie. Vytvoř si novou!</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showModal">
+  <div class="modal-backdrop" (click)="closeModal()"></div>
+
+  <div class="modal-card">
+    <h2>{{ isEditing ? 'Upravit kategorii' : 'Nová kategorie' }}</h2>
+
+    <div class="form-group">
+      <label>Název kategorie</label>
+      <input type="text" [(ngModel)]="newCategory.name" placeholder="Zadej název kategorie">
+    </div>
+
+    <div class="form-group">
+      <label>Typ</label>
+      <div class="type-selector">
+        <button 
+          class="type-btn" 
+          [class.active]="newCategory.type === 'expense'"
+          (click)="newCategory.type = 'expense'">
+          Výdaj
+        </button>
+        <button 
+          class="type-btn" 
+          [class.active]="newCategory.type === 'income'"
+          (click)="newCategory.type = 'income'">
+          Příjem
+        </button>
+      </div>
+    </div>
+
+    <button class="btn-primary" (click)="onSubmit()">{{ isEditing ? 'Uložit' : 'Vytvořit' }}</button>
+    <button class="btn-secondary" (click)="closeModal()">Zrušit</button>
+  </div>
+</div>

@@ -6,6 +6,7 @@ import { Analytics } from './pages/analytics/analytics';
 import { ImportExport } from './pages/import-export/import-export';
 import { Profile } from './pages/profile/profile';
 import { Settings } from './pages/settings/settings';
+import { Categories } from './pages/categories/categories';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, 
@@ -13,6 +14,7 @@ export const routes: Routes = [
   { path: 'history', component: History },
   { path: 'goals', component: Goals },
   { path: 'analytics', component: Analytics },
+  { path: 'categories', component: Categories },
   { path: 'profile', component: Profile },
   { path: 'import-export', component: ImportExport },
   { path: 'settings', component: Settings }

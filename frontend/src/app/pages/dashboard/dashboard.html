@@ -1,6 +1,19 @@
 <header class="top-bar">
   <h1>Dashboard</h1>
-  <div class="user-info">👤 Jmeno Uzivatele</div>
+  <div class="user-info">
+    <div *ngIf="authService.isLoggedIn$ | async; else guestHeader" class="logged-in">
+      <span>👤 {{ authService.currentUserName }}</span>
+      <button (click)="authService.logout()" class="btn-logout-small">Odhlásit</button>
+    </div>
+
+    <ng-template #guestHeader>
+      <div class="guest-actions">
+        <span (click)="openModal('login')" class="clickable-text">Přihlásit se</span>
+        <span class="divider">/</span>
+        <span (click)="openModal('register')" class="clickable-text highlight">Registrovat</span>
+      </div>
+    </ng-template>
+  </div>
 </header>
 
 <div class="balance-card">
@@ -8,12 +21,16 @@
     <span>Aktuální zůstatek</span>
     <div class="amount">4500 CZK</div>
   </div>
-  <button class="add-btn">+ Přidat záznam</button>
+  <button class="add-btn" (click)="onAddRecord()">+ Přidat záznam</button>
 </div>
 
 <h3>Nedávná historie</h3>
 <div class="history-list">
   
+  <div *ngIf="!(authService.isLoggedIn$ | async)" class="not-logged-in-message">
+    <p>Přihlaste se prosím, aby ste viděli vaše transakce</p>
+  </div>
+
   <div class="transaction-item" *ngFor="let item of transakce">
 
     <i class="material-icons icon">{{ item.ikona }}</i>
@@ -29,5 +46,93 @@
     </div>
 
   </div>
+
+  <div class="modal-overlay" *ngIf="showModal">
+  
+  <div class="modal-backdrop" (click)="closeModal()"></div>
+
+  <div class="modal-card">
+    
+    <div class="modal-tabs">
+      <button [class.active]="activeTab === 'login'" (click)="activeTab = 'login'">Přihlášení</button>
+      <button [class.active]="activeTab === 'register'" (click)="activeTab = 'register'">Registrace</button>
+    </div>
+
+    <div *ngIf="activeTab === 'login'" class="form-content">
+      <h2>Vítejte zpět 👋</h2>
+      
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="loginData.email" placeholder="vas@email.cz">
+      </div>
+      <div class="form-group">
+        <label>Heslo</label>
+        <input type="password" [(ngModel)]="loginData.password" placeholder="******">
+      </div>
+
+      <button class="btn-primary" (click)="onLogin()">Přihlásit se</button>
+    </div>
+
+    <div *ngIf="activeTab === 'register'" class="form-content">
+      <h2>Vytvořit účet 🚀</h2>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="registerData.email" placeholder="email@example.com">
+      </div>
+      <div class="form-group">
+        <label>Heslo</label>
+        <input type="password" [(ngModel)]="registerData.password" placeholder="Heslo">
+      </div>
+      <div class="form-group">
+        <label>Heslo znovu</label>
+        <input type="password" [(ngModel)]="registerData.passwordConfirm" placeholder="Heslo znovu">
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="souhlas">
+        <label for="souhlas">Souhlasím s prodejem ledviny</label>
+      </div>
+
+      <button class="btn-primary" (click)="onRegister()">Register</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showAddRecordModal">
+  
+  <div class="modal-backdrop" (click)="closeAddRecordModal()"></div>
+
+  <div class="modal-card">
+    <h2>Přidat záznam 📝</h2>
+
+    <div class="form-group">
+      <label>Částka</label>
+      <input type="number" [(ngModel)]="recordData.amount" placeholder="Zadej částku">
+    </div>
+
+    <div class="form-group">
+      <label>Popis</label>
+      <input type="text" [(ngModel)]="recordData.description" placeholder="Volitelný popis">
+    </div>
+
+    <div class="form-group">
+      <label>Datum</label>
+      <input type="date" [(ngModel)]="recordData.date">
+    </div>
+
+    <div class="form-group">
+      <label>Kategorie</label>
+      <select [(ngModel)]="recordData.category" class="form-select">
+        <option value="">Vyber kategorii</option>
+        <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" (click)="onSubmitRecord()">Přidat záznam</button>
+    <button class="btn-secondary" (click)="closeAddRecordModal()">Zrušit</button>
+  </div>
+</div>
 
 </div>
