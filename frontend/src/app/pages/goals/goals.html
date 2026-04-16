@@ -1,8 +1,8 @@
 <header class="top-bar">
   <h1>Moje Cíle</h1>
   <div class="actions">
-    <button class="btn-secondary">+ Přidat kategorii</button>
-    <button class="btn-secondary">+ Přidat cíl</button>
+    <button class="btn-secondary" (click)="openCategoryModal()">+ Přidat kategorii</button>
+    <button class="btn-secondary" (click)="openGoalModal()">+ Přidat cíl</button>
   </div>
 </header>
 
@@ -11,8 +11,13 @@
   <div class="category-group" *ngFor="let kategorie of kategorieCilu">
     
     <div class="category-header">
-      {{ kategorie.nazev }}
-      <span class="material-icons icon">expand_less</span>
+      <span>{{ kategorie.nazev }}</span>
+      <div class="category-actions">
+        <button class="delete-category-btn" (click)="deleteCategory(kategorie.nazev)" title="Smazat kategorii" [disabled]="isDeleting">
+          <i class="material-symbols-rounded">delete</i>
+        </button>
+        <span class="material-icons icon">expand_less</span>
+      </div>
     </div>
 
     <div class="goal-row" *ngFor="let cil of kategorie.cile">
@@ -47,11 +52,107 @@
         <div>Cílová částka: {{ cil.cil }} CZK</div>
       </div>
 
-      <button class="edit-btn">
+      <button class="edit-btn" (click)="editGoal(cil)">
         <i class="material-symbols-rounded">edit</i>
+      </button>
+
+      <button class="delete-btn" (click)="deleteGoal(cil)">
+        <i class="material-symbols-rounded">delete</i>
       </button>
 
     </div>
   </div>
 
+</div>
+
+<div class="modal-overlay" *ngIf="showCategoryModal" (click)="closeCategoryModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Přidat novou kategorii</h2>
+      <button class="close-btn" (click)="closeCategoryModal()">
+        <i class="material-symbols-rounded">close</i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Název kategorie</label>
+        <input type="text" [(ngModel)]="categoryForm.name" placeholder="Např. Dovolená" />
+      </div>
+
+      <div class="form-group">
+        <label>Ikona</label>
+        <div class="icon-selector">
+          <button 
+            *ngFor="let icon of availableIcons"
+            class="icon-btn" 
+            [class.selected]="categoryForm.icon === icon"
+            (click)="categoryForm.icon = icon"
+            type="button">
+            <i class="material-icons">{{ icon }}</i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeCategoryModal()" [disabled]="isSubmitting">Zrušit</button>
+      <button class="btn-primary" (click)="submitCategory()" [disabled]="isSubmitting">{{ isSubmitting ? 'Ukládám...' : 'Přidat kategorii' }}</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showGoalModal" (click)="closeGoalModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ goalForm.id ? 'Upravit cíl' : 'Přidat nový cíl' }}</h2>
+      <button class="close-btn" (click)="closeGoalModal()">
+        <i class="material-symbols-rounded">close</i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Název cíle</label>
+        <input type="text" [(ngModel)]="goalForm.name" placeholder="Např. Nový laptop" />
+      </div>
+
+      <div class="form-group">
+        <label>Kategorie</label>
+        <select [(ngModel)]="goalForm.categoryName">
+          <option value="">-- Vyberte kategorii --</option>
+          <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Ikona</label>
+        <div class="icon-selector">
+          <button 
+            *ngFor="let icon of availableIcons"
+            class="icon-btn" 
+            [class.selected]="goalForm.icon === icon"
+            (click)="goalForm.icon = icon"
+            type="button">
+            <i class="material-icons">{{ icon }}</i>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Cílová částka (CZK)</label>
+        <input type="number" [(ngModel)]="goalForm.targetAmount" placeholder="0" min="0" step="100" />
+      </div>
+
+      <div class="form-group">
+        <label>Aktuálně našetřeno (CZK)</label>
+        <input type="number" [(ngModel)]="goalForm.savedAmount" placeholder="0" min="0" step="100" />
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeGoalModal()" [disabled]="isSubmitting">Zrušit</button>
+      <button class="btn-primary" (click)="submitGoal()" [disabled]="isSubmitting">{{ isSubmitting ? 'Ukládám...' : (goalForm.id ? 'Uložit změny' : 'Přidat cíl') }}</button>
+    </div>
+  </div>
 </div>

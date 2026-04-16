@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export interface Category {
   id?: number;
   name: string;
   type: string;
+  categoryFor?: string;
   icon?: string;
 }
 
@@ -16,10 +18,14 @@ export class CategoriesService {
 
   private apiUrl = 'http://localhost:3000/categories';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
-  getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.apiUrl);
+  getCategories(categoryFor: string = 'transaction'): Observable<Category[]> {
+    const userId = this.authService.getUserId();
+    const url = userId 
+      ? `${this.apiUrl}?userId=${userId}&categoryFor=${categoryFor}` 
+      : `${this.apiUrl}?categoryFor=${categoryFor}`;
+    return this.http.get<Category[]>(url);
   }
 
   createCategory(category: Omit<Category, 'id'>): Observable<Category> {

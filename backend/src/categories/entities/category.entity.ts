@@ -13,6 +13,12 @@ export class Category {
   @Column()
   type: string;
 
+  @Column({ default: 'transaction' })
+  categoryFor: string;
+
+  @Column({ nullable: true })
+  icon?: string;
+
   @ManyToOne(() => User, user => user.categories, { onDelete: 'CASCADE', nullable: true })
   user: User;
 

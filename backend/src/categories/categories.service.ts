@@ -5,28 +5,33 @@ import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
 import { InjectRepository } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { IsNull } from 'typeorm';
+import { Goal } from '../goals/entities/goal.entity';
 
 @Injectable()
 export class CategoriesService {
-  constructor(@InjectRepository(Category) private categoryRepository: Repository<Category>) {}
+  constructor(
+    @InjectRepository(Category) private categoryRepository: Repository<Category>,
+    @InjectRepository(Goal) private goalRepository: Repository<Goal>
+  ) {}
 
   async create(createCategoryDto: CreateCategoryDto, userId: number) {
     const category = this.categoryRepository.create({
       ...createCategoryDto,
-      user: { id: userId }
+      user: { id: userId },
+      categoryFor: createCategoryDto.categoryFor || 'transaction'
     });
     return this.categoryRepository.save(category);
   }
 
-  async findAll(userId: number) {
-  return this.categoryRepository.find({
-    where: [
-      { user: { id: userId } },
-      { user: IsNull() }
-    ],
-    relations: ['user']
-  });
-}
+  async findAll(userId: number, categoryFor: string = 'transaction') {
+    return this.categoryRepository.find({
+      where: [
+        { user: { id: userId }, categoryFor },
+        { user: IsNull(), categoryFor }
+      ],
+      relations: ['user']
+    });
+  }
 
   async findOne(id: number) {
     return this.categoryRepository.findOne({ where: { id } });
@@ -38,6 +43,14 @@ export class CategoriesService {
   }
 
   async remove(id: number) {
+    // Get the category to find its name
+    const category = await this.categoryRepository.findOne({ where: { id } });
+    
+    if (category && category.categoryFor === 'goal') {
+      // Delete all goals associated with this category
+      await this.goalRepository.delete({ categoryName: category.name });
+    }
+    
     return this.categoryRepository.delete(id);
   }
 

@@ -1,6 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { CategoriesService, Category } from '../../services/categories.service';
 import { TransactionsService, Transaction } from '../../services/transactions.service';
@@ -12,7 +14,7 @@ import { TransactionsService, Transaction } from '../../services/transactions.se
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit {
+export class Dashboard implements OnInit, OnDestroy {
 
   showModal = false;
   activeTab: 'login' | 'register' = 'login';
@@ -41,12 +43,33 @@ export class Dashboard implements OnInit {
 
   transakce: any[] = [];
 
+  private destroy$ = new Subject<void>();
+
   constructor(public authService: AuthService, private categoriesService: CategoriesService, private transactionsService: TransactionsService, private cd: ChangeDetectorRef) { }
 
   ngOnInit() {
     if (this.authService.isLoggedIn()) {
       this.loadCategories();
     }
+
+    // Subscribe to login state changes
+    this.authService.isLoggedIn$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isLoggedIn) => {
+        if (isLoggedIn) {
+          this.loadCategories();
+        } else {
+          // Clear data when logging out
+          this.categories = [];
+          this.transakce = [];
+          this.cd.markForCheck();
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadCategories() {
@@ -151,7 +174,7 @@ export class Dashboard implements OnInit {
     this.authService.login(this.loginData).subscribe({
       next: (response: any) => {
         console.log('Odpověď serveru:', response);
-        this.authService.loginSuccess(response.email);
+        this.authService.loginSuccess(response.email, response.id);
         this.closeModal();
       },
       error: (err) => {
@@ -169,9 +192,9 @@ export class Dashboard implements OnInit {
     }
 
     this.authService.register(this.registerData).subscribe({
-      next: () => {
+      next: (response: any) => {
         alert('Registrace úspěšná!');
-        this.authService.loginSuccess(this.registerData.email);
+        this.authService.loginSuccess(this.registerData.email, response.id);
         this.closeModal();
       },
       error: (err: any) => {

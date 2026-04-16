@@ -1,26 +1,30 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
 import { Transaction } from '../../transactions/entities/transaction.entity';
+import { Goal } from '../../goals/entities/goal.entity';
 import { OneToMany } from 'typeorm';
 
 @Entity()
 export class User {
 
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @Column({ default: 'user' })
-  role: string;
+  role!: string;
 
   @OneToMany(() => Category, category => category.user)
-  categories: Category[];
+  categories?: Category[];
 
   @OneToMany(() => Transaction, transaction => transaction.user)
-  transactions: Transaction[];
+  transactions?: Transaction[];
+
+  @OneToMany(() => Goal, goal => goal.user)
+  goals?: Goal[];
 }

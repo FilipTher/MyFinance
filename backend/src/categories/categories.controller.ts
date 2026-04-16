@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Query } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -14,9 +14,10 @@ export class CategoriesController {
   }
 
   @Get()
-  findAll(@Request() req: any) {
-    const userId = req.user?.id || 1;
-    return this.categoriesService.findAll(userId);
+  findAll(@Query('userId') userId?: string, @Query('categoryFor') categoryFor?: string, @Request() req?: any) {
+    const id = userId ? parseInt(userId) : (req?.user?.id || 1);
+    const category = categoryFor || 'transaction';
+    return this.categoriesService.findAll(id, category);
   }
 
   @Get(':id')

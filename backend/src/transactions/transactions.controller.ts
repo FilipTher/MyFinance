@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, Query } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
@@ -15,9 +15,9 @@ export class TransactionsController {
   }
 
   @Get()
-  findAll(@Request() req: any) {
-    const userId = req.user?.id || 1;
-    return this.transactionsService.findAll(userId);
+  findAll(@Query('userId') userId?: string, @Request() req?: any) {
+    const id = userId ? parseInt(userId) : (req?.user?.id || 1);
+    return this.transactionsService.findAll(id);
   }
 
   @Get(':id')

@@ -1,38 +1,272 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { GoalsService, Goal } from '../../services/goals.service';
+import { CategoriesService } from '../../services/categories.service';
+
+interface GoalCategory {
+  nazev: string;
+  cile: any[];
+}
+
+interface CategoryForm {
+  name: string;
+  type: string;
+  icon: string;
+}
+
+interface GoalForm {
+  id?: number;
+  name: string;
+  categoryName: string;
+  icon: string;
+  targetAmount: number;
+  savedAmount: number;
+}
 
 @Component({
   selector: 'app-goals',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './goals.html',
   styleUrl: './goals.css'
 })
-export class Goals {
+export class Goals implements OnInit {
   
-  kategorieCilu = [
-    {
-      nazev: 'Nájem a energie',
-      cile: [
-        { nazev: 'Nájem', ikona: 'home', nasetreno: 7780, cil: 10000 },
-        { nazev: 'Energie', ikona: 'bolt', nasetreno: 3275, cil: 6000 }
-      ]
-    },
-    {
-      nazev: 'Nezbytné',
-      cile: [
-        { nazev: 'Potraviny', ikona: 'shopping_bag', nasetreno: 3500, cil: 3500 },
-        { nazev: 'Auto', ikona: 'directions_car', nasetreno: 2000, cil: 2000 }
-      ]
-    },
-    {
-      nazev: 'Zbytné',
-      cile: [
-        { nazev: 'Předplatná', ikona: 'headphones', nasetreno: 750, cil: 750 },
-        { nazev: 'Akce', ikona: 'camera_alt', nasetreno: 500, cil: 2000 }
-      ]
+  kategorieCilu: GoalCategory[] = [];
+  loading = true;
+  isSubmitting = false;
+  isDeleting = false;
+
+  showCategoryModal = false;
+  showGoalModal = false;
+
+  categoryForm: CategoryForm = { name: '', type: 'expense', icon: 'savings' };
+  goalForm: GoalForm = { name: '', categoryName: '', icon: 'target', targetAmount: 0, savedAmount: 0 };
+
+  availableIcons = ['savings', 'target', 'home', 'school', 'directions_car', 'flight', 'shopping_cart', 'health_and_safety', 'beach_access'];
+  categories: any[] = [];
+
+  constructor(
+    private goalsService: GoalsService,
+    private categoriesService: CategoriesService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.loadGoals();
+    this.loadCategories();
+  }
+
+  loadGoals(): void {
+    this.goalsService.getGoals().subscribe({
+      next: (goals: Goal[]) => {
+        this.kategorieCilu = this.groupGoalsByCategory(goals);
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading goals:', error);
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  loadCategories(): void {
+    this.categoriesService.getCategories('goal').subscribe({
+      next: (categories: any[]) => {
+        this.categories = categories;
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+      }
+    });
+  }
+
+  openCategoryModal(): void {
+    this.categoryForm = { name: '', type: 'expense', icon: 'savings' };
+    this.showCategoryModal = true;
+  }
+
+  closeCategoryModal(): void {
+    this.showCategoryModal = false;
+  }
+
+  openGoalModal(): void {
+    this.goalForm = { name: '', categoryName: '', icon: 'target', targetAmount: 0, savedAmount: 0 };
+    this.showGoalModal = true;
+  }
+
+  closeGoalModal(): void {
+    this.showGoalModal = false;
+  }
+
+  editGoal(goal: any): void {
+    this.goalForm = {
+      id: goal.id,
+      name: goal.nazev,
+      categoryName: goal.categoryName,
+      icon: goal.ikona,
+      targetAmount: goal.cil,
+      savedAmount: goal.nasetreno
+    };
+    this.showGoalModal = true;
+  }
+
+  deleteGoal(goal: any): void {
+    if (this.isDeleting || !confirm(`Opravdu chcete smazat cíl "${goal.nazev}"?`)) return;
+    
+    this.isDeleting = true;
+    this.goalsService.deleteGoal(goal.id).subscribe({
+      next: () => {
+        this.isDeleting = false;
+        this.loadGoals();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error deleting goal:', error);
+        this.isDeleting = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  deleteCategory(categoryName: string): void {
+    if (this.isDeleting || !confirm(`Opravdu chcete smazat kategorii "${categoryName}"? Všechny cíle v této kategorii budou smazány.`)) return;
+    
+    this.isDeleting = true;
+    // Find category by name and delete it
+    this.categoriesService.getCategories('goal').subscribe({
+      next: (categories: any[]) => {
+        const category = categories.find(c => c.name === categoryName);
+        if (category) {
+          this.categoriesService.deleteCategory(category.id).subscribe({
+            next: () => {
+              this.loadGoals();
+              this.loadCategories();
+              this.isDeleting = false;
+              this.cdr.detectChanges();
+            },
+            error: (error) => {
+              console.error('Error deleting category:', error);
+              this.isDeleting = false;
+              this.cdr.detectChanges();
+            }
+          });
+        } else {
+          console.error('Category not found:', categoryName);
+          this.isDeleting = false;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+        this.isDeleting = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  submitCategory(): void {
+    if (this.isSubmitting || !this.categoryForm.name.trim()) return;
+    
+    this.isSubmitting = true;
+    this.categoriesService.createCategory({
+      name: this.categoryForm.name,
+      type: this.categoryForm.type,
+      icon: this.categoryForm.icon,
+      categoryFor: 'goal'
+    }).subscribe({
+      next: () => {
+        this.loadCategories();
+        this.isSubmitting = false;
+        this.closeCategoryModal();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error creating category:', error);
+        this.isSubmitting = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  submitGoal(): void {
+    if (this.isSubmitting || !this.goalForm.name.trim() || !this.goalForm.categoryName || this.goalForm.targetAmount <= 0) return;
+    
+    this.isSubmitting = true;
+    
+    if (this.goalForm.id) {
+      // Update existing goal
+      this.goalsService.updateGoal(this.goalForm.id, {
+        name: this.goalForm.name,
+        categoryName: this.goalForm.categoryName,
+        icon: this.goalForm.icon,
+        targetAmount: this.goalForm.targetAmount,
+        savedAmount: this.goalForm.savedAmount
+      }).subscribe({
+        next: () => {
+          this.loadGoals();
+          this.isSubmitting = false;
+          this.closeGoalModal();
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error updating goal:', error);
+          this.isSubmitting = false;
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
+      // Create new goal
+      this.goalsService.createGoal({
+        name: this.goalForm.name,
+        categoryName: this.goalForm.categoryName,
+        icon: this.goalForm.icon,
+        targetAmount: this.goalForm.targetAmount,
+        savedAmount: this.goalForm.savedAmount
+      }).subscribe({
+        next: () => {
+          this.loadGoals();
+          this.isSubmitting = false;
+          this.closeGoalModal();
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error creating goal:', error);
+          this.isSubmitting = false;
+          this.cdr.detectChanges();
+        }
+      });
     }
-  ];
+  }
+
+  private groupGoalsByCategory(goals: Goal[]): GoalCategory[] {
+    const grouped = new Map<string, any[]>();
+
+    goals.forEach(goal => {
+      const categoryName = goal.categoryName;
+      if (!grouped.has(categoryName)) {
+        grouped.set(categoryName, []);
+      }
+      grouped.get(categoryName)!.push({
+        id: goal.id,
+        nazev: goal.name,
+        categoryName: goal.categoryName,
+        ikona: goal.icon,
+        nasetreno: goal.savedAmount,
+        cil: goal.targetAmount
+      });
+    });
+
+    const result: GoalCategory[] = [];
+    grouped.forEach((cile, nazev) => {
+      result.push({ nazev, cile });
+    });
+
+    return result;
+  }
 
   getProcento(nasetreno: number, cil: number): number {
     const proc = (nasetreno / cil) * 100;

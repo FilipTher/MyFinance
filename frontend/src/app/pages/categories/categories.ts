@@ -1,6 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { CategoriesService, Category } from '../../services/categories.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -11,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './categories.html',
   styleUrl: './categories.css',
 })
-export class Categories implements OnInit {
+export class Categories implements OnInit, OnDestroy {
 
   categories: Category[] = [];
   showModal = false;
@@ -23,12 +25,32 @@ export class Categories implements OnInit {
     type: 'expense'
   };
 
+  private destroy$ = new Subject<void>();
+
   constructor(private categoriesService: CategoriesService, private cd: ChangeDetectorRef, private authService: AuthService) {}
 
   ngOnInit() {
     if (this.authService.isLoggedIn()) {
       this.loadCategories();
     }
+
+    // Subscribe to login state changes
+    this.authService.isLoggedIn$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isLoggedIn) => {
+        if (isLoggedIn) {
+          this.loadCategories();
+        } else {
+          // Clear data when logging out
+          this.categories = [];
+          this.cd.markForCheck();
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadCategories() {

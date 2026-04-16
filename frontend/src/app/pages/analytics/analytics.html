@@ -11,11 +11,11 @@
       <div class="filters">
         <div class="select-group">
           <label>Od</label>
-          <select><option>Jan 2024</option></select>
+          <input type="date" [(ngModel)]="startDate" (change)="onDateRangeChange()">
         </div>
         <div class="select-group">
           <label>Do</label>
-          <select><option>Dec 2024</option></select>
+          <input type="date" [(ngModel)]="endDate" (change)="onDateRangeChange()">
         </div>
       </div>
     </div>
@@ -37,11 +37,11 @@
       <div class="filters">
         <div class="select-group">
           <label>Od</label>
-          <select><option>Jan 2024</option></select>
+          <input type="date" [(ngModel)]="startDate" (change)="onDateRangeChange()">
         </div>
         <div class="select-group">
           <label>Do</label>
-          <select><option>Dec 2024</option></select>
+          <input type="date" [(ngModel)]="endDate" (change)="onDateRangeChange()">
         </div>
       </div>
     </div>

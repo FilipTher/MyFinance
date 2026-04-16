@@ -13,6 +13,9 @@ export class Transaction {
   @Column({ type: 'text', nullable: true })
   description: string;
 
+  @Column({ type: 'varchar', default: 'expense' })
+  type: 'expense' | 'income';
+
   @CreateDateColumn()
   date: Date;
 

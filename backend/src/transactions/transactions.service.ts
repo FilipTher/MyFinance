@@ -24,6 +24,7 @@ export class TransactionsService {
       amount: createTransactionDto.amount,
       description: createTransactionDto.description,
       date: new Date(createTransactionDto.date),
+      type: category.type as 'expense' | 'income',
       category: category,
       user: { id: userId }
     });
@@ -43,6 +44,16 @@ export class TransactionsService {
   }
 
   async update(id: number, updateTransactionDto: UpdateTransactionDto) {
+    const updateData: any = {
+      amount: updateTransactionDto.amount,
+      description: updateTransactionDto.description,
+      date: updateTransactionDto.date ? new Date(updateTransactionDto.date) : undefined,
+    };
+
+    if (updateTransactionDto.type) {
+      updateData.type = updateTransactionDto.type;
+    }
+
     if (updateTransactionDto.category) {
       const category = await this.categoriesRepository.findOne({
         where: { id: parseInt(updateTransactionDto.category) }
@@ -52,19 +63,10 @@ export class TransactionsService {
         throw new Error('Category not found');
       }
 
-      return this.transactionRepository.update(id, {
-        amount: updateTransactionDto.amount,
-        description: updateTransactionDto.description,
-        date: updateTransactionDto.date ? new Date(updateTransactionDto.date) : undefined,
-        category: category
-      });
+      updateData.category = category;
     }
 
-    return this.transactionRepository.update(id, {
-      amount: updateTransactionDto.amount,
-      description: updateTransactionDto.description,
-      date: updateTransactionDto.date ? new Date(updateTransactionDto.date) : undefined,
-    });
+    return this.transactionRepository.update(id, updateData);
   }
 
   remove(id: number) {
