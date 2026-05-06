@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { TransactionsService, Transaction } from '../../services/transactions.service';
+import { AuthService } from '../../services/auth.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -53,6 +54,48 @@ export class Analytics implements OnInit, OnDestroy {
     ]
   };
 
+  public comparisonData: ChartConfiguration<'line'>['data'] = {
+    labels: [],
+    datasets: [
+      {
+        data: [],
+        label: 'Příjmy',
+        fill: true,
+        tension: 0.4,
+        borderColor: '#2ecc71',
+        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+        pointBackgroundColor: '#2ecc71'
+      },
+      {
+        data: [],
+        label: 'Výdaje',
+        fill: true,
+        tension: 0.4,
+        borderColor: '#e74c3c',
+        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+        pointBackgroundColor: '#e74c3c'
+      }
+    ]
+  };
+
+  public comparisonChartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true }
+    },
+    scales: {
+      x: {
+        grid: { color: '#444' },
+        ticks: { color: '#aaa' }
+      },
+      y: {
+        grid: { color: '#444' },
+        ticks: { color: '#aaa' }
+      }
+    }
+  };
+
   public chartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -71,7 +114,7 @@ export class Analytics implements OnInit, OnDestroy {
     }
   };
 
-  constructor(private transactionsService: TransactionsService, private cd: ChangeDetectorRef) {
+  constructor(private transactionsService: TransactionsService, private authService: AuthService, private cd: ChangeDetectorRef) {
     const today = new Date();
     const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
     
@@ -80,7 +123,29 @@ export class Analytics implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.loadTransactionsAndUpdateCharts();
+    if (this.authService.isLoggedIn()) {
+      this.loadTransactionsAndUpdateCharts();
+    }
+
+    // Subscribe to login state changes
+    this.authService.isLoggedIn$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isLoggedIn) => {
+        if (isLoggedIn) {
+          this.loadTransactionsAndUpdateCharts();
+        } else {
+          // Clear data when logging out
+          this.allTransactions = [];
+          this.incomeData.labels = [];
+          this.incomeData.datasets[0].data = [];
+          this.expenseData.labels = [];
+          this.expenseData.datasets[0].data = [];
+          this.comparisonData.labels = [];
+          this.comparisonData.datasets[0].data = [];
+          this.comparisonData.datasets[1].data = [];
+          this.cd.markForCheck();
+        }
+      });
   }
 
   ngOnDestroy() {
@@ -159,6 +224,21 @@ export class Analytics implements OnInit, OnDestroy {
       datasets: [
         {
           ...this.expenseData.datasets[0],
+          data: monthData.expense
+        }
+      ]
+    };
+
+    this.comparisonData = {
+      ...this.comparisonData,
+      labels: monthLabels,
+      datasets: [
+        {
+          ...this.comparisonData.datasets[0],
+          data: monthData.income
+        },
+        {
+          ...this.comparisonData.datasets[1],
           data: monthData.expense
         }
       ]

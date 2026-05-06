@@ -12,6 +12,9 @@ export class AuthService {
   public isLoggedIn$ = new BehaviorSubject<boolean>(!!localStorage.getItem('myfinance_token'));
   public currentUserName = localStorage.getItem('myfinance_user_name') || 'Uživatel';
   public currentUserId = localStorage.getItem('myfinance_user_id') ? parseInt(localStorage.getItem('myfinance_user_id')!) : null;
+  public currentUserBalance = localStorage.getItem('myfinance_user_balance') ? parseFloat(localStorage.getItem('myfinance_user_balance')!) : 0;
+  public currentUserFullName = localStorage.getItem('myfinance_user_full_name') || '';
+  public currentUserCreatedAt = localStorage.getItem('myfinance_user_created_at') || null;
 
   constructor(private http: HttpClient) { }
 
@@ -23,12 +26,24 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/login`, userData);
   }
 
-  loginSuccess(emailOrName: string, userId?: number) {
+  loginSuccess(emailOrName: string, userId?: number, initialBalance?: number, fullName?: string, createdAt?: string) {
     localStorage.setItem('myfinance_token', 'tajny-token-123');
     localStorage.setItem('myfinance_user_name', emailOrName);
     if (userId) {
       localStorage.setItem('myfinance_user_id', userId.toString());
       this.currentUserId = userId;
+    }
+    if (initialBalance !== undefined) {
+      localStorage.setItem('myfinance_user_balance', initialBalance.toString());
+      this.currentUserBalance = initialBalance;
+    }
+    if (fullName) {
+      localStorage.setItem('myfinance_user_full_name', fullName);
+      this.currentUserFullName = fullName;
+    }
+    if (createdAt) {
+      localStorage.setItem('myfinance_user_created_at', createdAt);
+      this.currentUserCreatedAt = createdAt;
     }
     this.currentUserName = emailOrName;
     this.isLoggedIn$.next(true);
@@ -38,8 +53,23 @@ export class AuthService {
     localStorage.removeItem('myfinance_token');
     localStorage.removeItem('myfinance_user_name');
     localStorage.removeItem('myfinance_user_id');
+    localStorage.removeItem('myfinance_user_balance');
+    localStorage.removeItem('myfinance_user_full_name');
+    localStorage.removeItem('myfinance_user_created_at');
     this.currentUserId = null;
+    this.currentUserBalance = 0;
+    this.currentUserFullName = '';
+    this.currentUserCreatedAt = null;
     this.isLoggedIn$.next(false);
+  }
+
+  updateBalance(newBalance: number) {
+    localStorage.setItem('myfinance_user_balance', newBalance.toString());
+    this.currentUserBalance = newBalance;
+  }
+
+  getBalance(): number {
+    return this.currentUserBalance;
   }
 
   isLoggedIn(): boolean {
@@ -49,5 +79,16 @@ export class AuthService {
   getUserId(): number | null {
     const id = localStorage.getItem('myfinance_user_id');
     return id ? parseInt(id) : null;
+  }
+
+  getCreatedAt(): string | null {
+    return this.currentUserCreatedAt;
+  }
+
+  updateUserProfile(fullName: string) {
+    if (fullName) {
+      localStorage.setItem('myfinance_user_full_name', fullName);
+      this.currentUserFullName = fullName;
+    }
   }
 }

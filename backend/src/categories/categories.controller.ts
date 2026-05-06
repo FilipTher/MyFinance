@@ -8,8 +8,8 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto, @Request() req: any) {
-    const userId = req.user?.id || 1;
+  create(@Body() createCategoryDto: CreateCategoryDto & { userId?: number }, @Request() req: any) {
+    const userId = createCategoryDto.userId || req.user?.id || 1;
     return this.categoriesService.create(createCategoryDto, userId);
   }
 

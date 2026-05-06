@@ -142,3 +142,65 @@ input:checked + .slider:before {
   background-color: var(--accent-red);
   color: white;
 }
+
+.balance-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.balance-value {
+  font-size: 18px;
+  font-weight: bold;
+  min-width: 150px;
+}
+
+.balance-input {
+  background-color: #222;
+  color: white;
+  border: 1px solid #555;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 150px;
+}
+
+.btn-edit {
+  background-color: transparent;
+  color: var(--accent-green);
+  border: 1px solid var(--accent-green);
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-edit:hover {
+  background-color: var(--accent-green);
+  color: black;
+}
+
+.btn-edit .material-icons {
+  font-size: 18px;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-cancel {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--text-muted);
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background-color: var(--text-muted);
+  color: black;
+}

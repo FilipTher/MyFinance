@@ -67,25 +67,30 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 15px;
+  gap: 10px;
 }
 
 .goal-main {
   display: flex;
   align-items: center;
-  width: 150px;
+  width: 120px;
 }
 
 .goal-icon { font-size: 24px; margin-right: 10px; }
 .goal-name { font-weight: bold; }
 
-.status-icon { width: 30px; text-align: center; }
+.status-icon { 
+  width: 85px; 
+  text-align: center; 
+  font-size: 12px;
+  color: var(--text-muted);
+}
 
 .progress-section {
   flex: 2;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .progress-bar-bg {
@@ -104,10 +109,10 @@
 
 .goal-stats {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   font-size: 12px;
   color: var(--text-muted);
-  width: 400px;
+  width: 320px;
   justify-content: flex-end;
 }
 
@@ -246,11 +251,16 @@
   border-radius: 8px;
   color: white;
   cursor: pointer;
-  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.icon-btn i {
+  font-size: 24px;
 }
 
 .icon-btn:hover {

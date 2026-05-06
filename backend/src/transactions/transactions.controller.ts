@@ -8,9 +8,9 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Post()
-  create(@Body() createTransactionDto: CreateTransactionDto, @Request() req: any) {
+  create(@Body() createTransactionDto: CreateTransactionDto & { userId?: number }, @Request() req: any) {
     console.log('Přijatá data z frontendu:', createTransactionDto);
-    const userId = req.user?.id || 1;
+    const userId = createTransactionDto.userId || req.user?.id || 1;
     return this.transactionsService.create(createTransactionDto, userId);
   }
 

@@ -29,8 +29,8 @@
 
       <div class="bottom-bar">
         <div class="divider"></div>
-        <button class="action-btn" [disabled]="!fileName" (click)="processFile()">
-          Import
+        <button class="action-btn" [disabled]="!fileName || isImporting" (click)="processFile()">
+          {{ isImporting ? 'Importuji...' : 'Import' }}
         </button>
       </div>
 
@@ -39,10 +39,35 @@
 
     <div *ngIf="activeTab === 'export'" class="tab-content center-content">
       <i class="material-icons big-icon">file_download</i>
-      <p>Stáhněte si svá data ve formátu CSV</p>
-      <button class="export-btn">Stáhnout data</button>
+      <p>Stáhněte si svá data ve formátu JSON</p>
+      <button class="export-btn" (click)="exportData()" [disabled]="isExporting">
+        {{ isExporting ? 'Exportuji...' : 'Stáhnout data' }}
+      </button>
     </div>
 
   </section>
 
+</div>
+
+<!-- Import Dialogue Modal -->
+<div *ngIf="importDialogueOpen" class="dialogue-overlay" (click)="onImportChoice('cancel')">
+  <div class="dialogue-modal" (click)="$event.stopPropagation()">
+    <h2>Jak chcete importovat data?</h2>
+    <p>Vyberte jednu z možností:</p>
+    
+    <div class="dialogue-buttons">
+      <button class="btn-replace" (click)="onImportChoice('replace')">
+        <span class="material-icons">refresh</span>
+        Nahradit
+      </button>
+      <button class="btn-add" (click)="onImportChoice('add')">
+        <span class="material-icons">add</span>
+        Přidat
+      </button>
+      <button class="btn-cancel" (click)="onImportChoice('cancel')">
+        <span class="material-icons">close</span>
+        Zrušit
+      </button>
+    </div>
+  </div>
 </div>

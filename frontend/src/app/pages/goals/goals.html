@@ -14,7 +14,7 @@
       <span>{{ kategorie.nazev }}</span>
       <div class="category-actions">
         <button class="delete-category-btn" (click)="deleteCategory(kategorie.nazev)" title="Smazat kategorii" [disabled]="isDeleting">
-          <i class="material-symbols-rounded">delete</i>
+          <i class="material-symbols-rounded">smazat</i>
         </button>
         <span class="material-icons icon">expand_less</span>
       </div>
@@ -30,7 +30,7 @@
       <div class="status-icon">
         <i class="material-symbols-rounded" 
            [style.color]="getProcento(cil.nasetreno, cil.cil) >= 100 ? 'var(--accent-green)' : 'var(--accent-red)'">
-           {{ getProcento(cil.nasetreno, cil.cil) >= 100 ? 'check' : 'close' }}
+           {{ getProcento(cil.nasetreno, cil.cil) >= 100 ? 'Dosaženo' : 'Nedosaženo' }}
         </i>
       </div>
 
@@ -53,11 +53,11 @@
       </div>
 
       <button class="edit-btn" (click)="editGoal(cil)">
-        <i class="material-symbols-rounded">edit</i>
+        <i class="material-symbols-rounded">upravit</i>
       </button>
 
       <button class="delete-btn" (click)="deleteGoal(cil)">
-        <i class="material-symbols-rounded">delete</i>
+        <i class="material-symbols-rounded">smazat</i>
       </button>
 
     </div>

@@ -23,7 +23,7 @@
         <span class="stat-label">Transakcí</span>
       </div>
       <div class="stat-item">
-        <span class="stat-value">12</span>
+        <span class="stat-value">{{ uzivatel.mesicu }}</span>
         <span class="stat-label">Měsíců</span>
       </div>
     </div>
@@ -62,14 +62,6 @@
       </div>
 
       <div class="form-group">
-        <label>Telefon</label>
-        <div class="input-wrapper">
-          <i class="material-icons icon">call</i>
-          <input type="text" [(ngModel)]="uzivatel.telefon" [disabled]="!editace">
-        </div>
-      </div>
-
-      <div class="form-group">
         <label>Datum registrace</label>
         <div class="input-wrapper disabled-look">
           <i class="material-icons icon">calendar_today</i>
@@ -80,7 +72,7 @@
     </div>
 
     <h3 class="security-title">Bezpečnost</h3>
-    <button class="btn-secondary">Změnit heslo</button>
+    <button class="btn-secondary" (click)="changePassword()">Změnit heslo</button>
 
   </div>
 

@@ -22,6 +22,17 @@
   font-weight: bold;
 }
 
+.balance-breakdown {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.saved-amount {
+  color: var(--accent-green);
+  font-weight: 600;
+}
+
 .add-btn {
   background-color: #333;
   color: white;

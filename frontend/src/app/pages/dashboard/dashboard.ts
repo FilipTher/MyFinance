@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { CategoriesService, Category } from '../../services/categories.service';
 import { TransactionsService, Transaction } from '../../services/transactions.service';
+import { GoalsService, Goal } from '../../services/goals.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,7 +29,8 @@ export class Dashboard implements OnInit, OnDestroy {
   registerData = {
     email: '',
     password: '',
-    passwordConfirm: ''
+    passwordConfirm: '',
+    name: ''
   };
 
   recordData = {
@@ -43,13 +45,19 @@ export class Dashboard implements OnInit, OnDestroy {
 
   transakce: any[] = [];
 
+  goals: Goal[] = [];
+  totalSavedInGoals: number = 0;
+
+  currentBalance: number = 0;
+
   private destroy$ = new Subject<void>();
 
-  constructor(public authService: AuthService, private categoriesService: CategoriesService, private transactionsService: TransactionsService, private cd: ChangeDetectorRef) { }
+  constructor(public authService: AuthService, private categoriesService: CategoriesService, private transactionsService: TransactionsService, private goalsService: GoalsService, private cd: ChangeDetectorRef) { }
 
   ngOnInit() {
     if (this.authService.isLoggedIn()) {
       this.loadCategories();
+      this.loadGoals();
     }
 
     // Subscribe to login state changes
@@ -58,10 +66,13 @@ export class Dashboard implements OnInit, OnDestroy {
       .subscribe((isLoggedIn) => {
         if (isLoggedIn) {
           this.loadCategories();
+          this.loadGoals();
         } else {
           // Clear data when logging out
           this.categories = [];
           this.transakce = [];
+          this.goals = [];
+          this.totalSavedInGoals = 0;
           this.cd.markForCheck();
         }
       });
@@ -91,8 +102,7 @@ export class Dashboard implements OnInit, OnDestroy {
     this.transactionsService.getTransactions().subscribe({
       next: (data: Transaction[]) => {
         this.transakce = data.map(t => {
-          const categoryId = typeof t.category === 'string' ? parseInt(t.category) : t.category;
-          const categoryName = this.categories.find(c => c.id === categoryId)?.name || 'Nezařazeno';
+          const categoryName = (t.category as any)?.name || 'Nezařazeno';
           return {
             nazev: categoryName,
             castka: t.type === 'income' ? parseInt(t.amount as any) : -parseInt(t.amount as any),
@@ -102,6 +112,7 @@ export class Dashboard implements OnInit, OnDestroy {
             barva: t.type === 'income' ? 'green' : 'red'
           };
         });
+        this.calculateBalance();
         this.cd.markForCheck();
       },
       error: (err) => {
@@ -110,6 +121,36 @@ export class Dashboard implements OnInit, OnDestroy {
         this.cd.markForCheck();
       }
     });
+  }
+
+  loadGoals() {
+    this.goalsService.getGoals()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: Goal[]) => {
+          this.goals = data;
+          this.calculateTotalSavedInGoals();
+          this.calculateBalance();
+          this.cd.markForCheck();
+        },
+        error: (err) => {
+          console.error('Chyba při načítání cílů:', err);
+          this.goals = [];
+          this.totalSavedInGoals = 0;
+          this.cd.markForCheck();
+        }
+      });
+  }
+
+  calculateTotalSavedInGoals() {
+    this.totalSavedInGoals = this.goals.reduce((sum, goal) => sum + (goal.savedAmount || 0), 0);
+  }
+
+  calculateBalance() {
+    const initialBalance = this.authService.getBalance();
+    const transactionSum = this.transakce.reduce((sum, t) => sum + t.castka, 0);
+    // Subtract the total saved in goals from the balance
+    this.currentBalance = initialBalance + transactionSum - this.totalSavedInGoals;
   }
 
   openModal(tab: 'login' | 'register') {
@@ -160,6 +201,7 @@ export class Dashboard implements OnInit, OnDestroy {
         alert('Záznam byl úspěšně přidán!');
         this.closeAddRecordModal();
         this.loadTransactions();
+        this.loadGoals();
       },
       error: (err) => {
         console.error('Chyba při přidávání transakce:', err);
@@ -174,7 +216,7 @@ export class Dashboard implements OnInit, OnDestroy {
     this.authService.login(this.loginData).subscribe({
       next: (response: any) => {
         console.log('Odpověď serveru:', response);
-        this.authService.loginSuccess(response.email, response.id);
+        this.authService.loginSuccess(response.email, response.id, response.initialBalance || 0, response.name, response.createdAt);
         this.closeModal();
       },
       error: (err) => {
@@ -194,7 +236,7 @@ export class Dashboard implements OnInit, OnDestroy {
     this.authService.register(this.registerData).subscribe({
       next: (response: any) => {
         alert('Registrace úspěšná!');
-        this.authService.loginSuccess(this.registerData.email, response.id);
+        this.authService.loginSuccess(this.registerData.email, response.id, 0, this.registerData.name, response.createdAt || new Date().toISOString());
         this.closeModal();
       },
       error: (err: any) => {

@@ -24,6 +24,9 @@ export class UsersService {
     return {
       id: user.id,
       email: user.email,
+      name: user.name,
+      initialBalance: user.initialBalance,
+      createdAt: user.createdAt,
       zprava: 'Jsi tam, borče!'
     };
   }
@@ -42,6 +45,8 @@ export class UsersService {
       email: createUserDto.email,
       password: hashedPassword,
       role: 'user',
+      name: createUserDto.name,
+      initialBalance: createUserDto.initialBalance || 0,
     });
 
     try {
@@ -60,5 +65,17 @@ export class UsersService {
 
   findOne(email: string) {
     return this.usersRepository.findOneBy({ email });
+  }
+
+  async updateBalance(userId: number, initialBalance: number) {
+    return this.usersRepository.update(userId, { initialBalance });
+  }
+
+  async getUserById(userId: number) {
+    return this.usersRepository.findOneBy({ id: userId });
+  }
+
+  async updateUser(userId: number, updateData: any) {
+    return this.usersRepository.update(userId, updateData);
   }
 }

@@ -8,7 +8,7 @@ export interface Transaction {
   amount: number;
   description: string;
   date: string;
-  category: string;
+  category: any;
   type: 'expense' | 'income';
 }
 
@@ -28,6 +28,48 @@ export class TransactionsService {
   }
 
   createTransaction(transaction: Transaction): Observable<Transaction> {
-    return this.http.post<Transaction>(this.apiUrl, transaction);
+    const userId = this.authService.getUserId();
+    const transactionWithUserId = { ...transaction, userId };
+    return this.http.post<Transaction>(this.apiUrl, transactionWithUserId);
+  }
+
+  deleteTransaction(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  deleteTransactions(ids: number[]): Observable<any> {
+    const deleteRequests = ids.map(id => this.deleteTransaction(id));
+    return new Observable(observer => {
+      let completed = 0;
+      let hasError = false;
+
+      if (deleteRequests.length === 0) {
+        observer.next([]);
+        observer.complete();
+        return;
+      }
+
+      deleteRequests.forEach(req => {
+        req.subscribe({
+          next: () => {
+            completed++;
+            if (completed === deleteRequests.length) {
+              observer.next({ deleted: completed });
+              observer.complete();
+            }
+          },
+          error: (err) => {
+            if (!hasError) {
+              hasError = true;
+              observer.error(err);
+            }
+          }
+        });
+      });
+    });
+  }
+
+  updateTransaction(id: number, transaction: Partial<Transaction>): Observable<Transaction> {
+    return this.http.patch<Transaction>(`${this.apiUrl}/${id}`, transaction);
   }
 }

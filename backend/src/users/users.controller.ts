@@ -22,4 +22,19 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.getUserById(+id);
+  }
+
+  @Patch(':id/balance')
+  updateBalance(@Param('id') id: string, @Body() updateData: { initialBalance: number }) {
+    return this.usersService.updateBalance(+id, updateData.initialBalance);
+  }
+
+  @Patch(':id')
+  updateUser(@Param('id') id: string, @Body() updateData: any) {
+    return this.usersService.updateUser(+id, updateData);
+  }
+
 }

@@ -44,28 +44,34 @@
 
 
   <div class="settings-card">
-    <h3>Upozornění & Zvuky</h3>
-
+    <h3>Peníze</h3>
+    
     <div class="setting-row">
       <div class="label-group">
-        <i class="material-icons icon">mail</i>
-        <span>E-mailová upozornění</span>
+        <i class="material-icons icon">account_balance_wallet</i>
+        <span>Počáteční zůstatek</span>
       </div>
-      <label class="switch">
-        <input type="checkbox" [(ngModel)]="nastaveni.notifikaceEmail">
-        <span class="slider round"></span>
-      </label>
-    </div>
-
-    <div class="setting-row">
-      <div class="label-group">
-        <i class="material-icons icon">smartphone</i>
-        <span>Push notifikace</span>
+      <div class="balance-display">
+        <span *ngIf="!isEditingBalance" class="balance-value">{{ nastaveni.initialBalance }} {{ nastaveni.mena }}</span>
+        <input 
+          *ngIf="isEditingBalance" 
+          type="number" 
+          [(ngModel)]="tempBalance" 
+          step="0.01" 
+          class="balance-input"
+        >
+        <button 
+          *ngIf="!isEditingBalance" 
+          (click)="editBalance()" 
+          class="btn-edit"
+        >
+          <i class="material-icons">edit</i>
+        </button>
+        <div *ngIf="isEditingBalance" class="edit-buttons">
+          <button (click)="saveBalance()" class="btn-save">Uložit</button>
+          <button (click)="cancelEditBalance()" class="btn-cancel">Zrušit</button>
+        </div>
       </div>
-      <label class="switch">
-        <input type="checkbox" [(ngModel)]="nastaveni.notifikaceMobil">
-        <span class="slider round"></span>
-      </label>
     </div>
   </div>
 

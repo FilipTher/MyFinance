@@ -29,7 +29,9 @@ export class CategoriesService {
   }
 
   createCategory(category: Omit<Category, 'id'>): Observable<Category> {
-    return this.http.post<Category>(this.apiUrl, category);
+    const userId = this.authService.getUserId();
+    const categoryWithUserId = { ...category, userId };
+    return this.http.post<Category>(this.apiUrl, categoryWithUserId);
   }
 
   updateCategory(id: number, category: Omit<Category, 'id'>): Observable<Category> {

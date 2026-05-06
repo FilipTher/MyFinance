@@ -19,7 +19,10 @@
 <div class="balance-card">
   <div>
     <span>Aktuální zůstatek</span>
-    <div class="amount">4500 CZK</div>
+    <div class="amount" [style.color]="currentBalance >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'">{{ currentBalance }} CZK</div>
+    <div class="balance-breakdown" *ngIf="totalSavedInGoals > 0">
+      <small>Ušetřeno v cílech: <span class="saved-amount">{{ totalSavedInGoals }} CZK</span></small>
+    </div>
   </div>
   <button class="add-btn" (click)="onAddRecord()">+ Přidat záznam</button>
 </div>
@@ -75,6 +78,11 @@
 
     <div *ngIf="activeTab === 'register'" class="form-content">
       <h2>Vytvořit účet!</h2>
+
+      <div class="form-group">
+        <label>Jméno</label>
+        <input type="text" [(ngModel)]="registerData.name" placeholder="Vaše jméno">
+      </div>
 
       <div class="form-group">
         <label>Email</label>

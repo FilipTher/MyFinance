@@ -6,6 +6,33 @@
 
   <div class="chart-section">
     <div class="chart-header">
+      <h2>Porovnání příjmů a výdajů</h2>
+      
+      <div class="filters">
+        <div class="select-group">
+          <label>Od</label>
+          <input type="date" [(ngModel)]="startDate" (change)="onDateRangeChange()">
+        </div>
+        <div class="select-group">
+          <label>Do</label>
+          <input type="date" [(ngModel)]="endDate" (change)="onDateRangeChange()">
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-wrapper">
+      <canvas baseChart
+        [data]="comparisonData"
+        [options]="comparisonChartOptions"
+        [type]="'line'">
+      </canvas>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="chart-section">
+    <div class="chart-header">
       <h2>Příjmy</h2>
       
       <div class="filters">

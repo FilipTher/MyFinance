@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { TransactionsService } from '../../services/transactions.service';
+import { CategoriesService } from '../../services/categories.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-settings',
@@ -9,26 +13,156 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './settings.html',
   styleUrl: './settings.css'
 })
-export class Settings {
+export class Settings implements OnInit {
   
   nastaveni = {
     mena: 'CZK',
     jazyk: 'cz',
     tmavyRezim: true,
-    notifikaceEmail: true,
-    notifikaceMobil: false,
-    zvuky: true
+    initialBalance: 0
   };
 
+  isEditingBalance = false;
+  tempBalance: number = 0;
+
+  constructor(
+    public authService: AuthService, 
+    private http: HttpClient,
+    private transactionsService: TransactionsService,
+    private categoriesService: CategoriesService
+  ) {
+    this.nastaveni.initialBalance = this.authService.getBalance();
+    this.tempBalance = this.nastaveni.initialBalance;
+  }
+
+  ngOnInit() {
+    this.loadSettings();
+  }
+
+  loadSettings() {
+    const savedSettings = localStorage.getItem('myfinance_settings');
+    if (savedSettings) {
+      const parsed = JSON.parse(savedSettings);
+      this.nastaveni.mena = parsed.mena || 'CZK';
+      this.nastaveni.jazyk = parsed.jazyk || 'cz';
+      this.nastaveni.tmavyRezim = parsed.tmavyRezim !== undefined ? parsed.tmavyRezim : true;
+    }
+  }
+
+  editBalance() {
+    this.isEditingBalance = true;
+    this.tempBalance = this.nastaveni.initialBalance;
+  }
+
+  saveBalance() {
+    const userId = this.authService.currentUserId;
+    if (!userId) {
+      alert('Uživatel není přihlášen.');
+      return;
+    }
+
+    this.http.patch(`http://localhost:3000/users/${userId}/balance`, {
+      initialBalance: this.tempBalance
+    }).subscribe({
+      next: () => {
+        this.nastaveni.initialBalance = this.tempBalance;
+        this.authService.updateBalance(this.tempBalance);
+        this.isEditingBalance = false;
+        alert('Počáteční zůstatek byl úspěšně aktualizován!');
+      },
+      error: (err) => {
+        console.error('Chyba při aktualizaci zůstatku:', err);
+        alert('Chyba při aktualizaci zůstatku.');
+      }
+    });
+  }
+
+  cancelEditBalance() {
+    this.isEditingBalance = false;
+    this.tempBalance = this.nastaveni.initialBalance;
+  }
+
   ulozitNastaveni() {
-    console.log('Ukládám:', this.nastaveni);
+    const settings = {
+      mena: this.nastaveni.mena,
+      jazyk: this.nastaveni.jazyk,
+      tmavyRezim: this.nastaveni.tmavyRezim
+    };
+    localStorage.setItem('myfinance_settings', JSON.stringify(settings));
+    
+    if (this.nastaveni.tmavyRezim) {
+      document.body.style.backgroundColor = '#1a1a1a';
+      document.body.style.color = '#ffffff';
+    } else {
+      document.body.style.backgroundColor = '#ffffff';
+      document.body.style.color = '#000000';
+    }
+    
     alert('Nastavení bylo úspěšně uloženo.');
   }
 
   resetovatData() {
     const potvrzeni = confirm('Opravdu chcete smazat všechna data? Tato akce je nevratná!');
     if (potvrzeni) {
-      alert('Všechna data byla vymazána (simulace).');
+      const userId = this.authService.currentUserId;
+      if (!userId) {
+        alert('Uživatel není přihlášen.');
+        return;
+      }
+
+      // First, delete all transactions
+      this.transactionsService.getTransactions().subscribe({
+        next: (transactions: any[]) => {
+          const deleteTransactionsPromise = transactions.length > 0 
+            ? new Promise((resolve) => {
+                const transactionIds = transactions.map((t: any) => t.id);
+                this.transactionsService.deleteTransactions(transactionIds).subscribe({
+                  next: () => resolve(true),
+                  error: () => resolve(false)
+                });
+              })
+            : Promise.resolve(true);
+
+          deleteTransactionsPromise.then(() => {
+            // Then delete all categories
+            this.categoriesService.getCategories().subscribe({
+              next: (categories: any[]) => {
+                if (categories.length === 0) {
+                  alert('Všechna data byla úspěšně smazána!');
+                  return;
+                }
+
+                let categoryDeleted = 0;
+                categories.forEach((category: any) => {
+                  this.categoriesService.deleteCategory(category.id).subscribe({
+                    next: () => {
+                      categoryDeleted++;
+                      if (categoryDeleted === categories.length) {
+                        alert('Všechna data byla úspěšně smazána!');
+                      }
+                    },
+                    error: (err) => {
+                      console.error('Chyba při mazání kategorie:', err);
+                      categoryDeleted++;
+                      if (categoryDeleted === categories.length) {
+                        alert('Všechna data byla úspěšně smazána!');
+                      }
+                    }
+                  });
+                });
+              },
+              error: (err) => {
+                console.error('Chyba při načítání kategorií:', err);
+                alert('Transakce byly smazány, ale došlo k chybě při mazání kategorií.');
+              }
+            });
+          });
+        },
+        error: (err) => {
+          console.error('Chyba při načítání transakcí:', err);
+          alert('Chyba při načítání transakcí.');
+        }
+      });
     }
   }
 }

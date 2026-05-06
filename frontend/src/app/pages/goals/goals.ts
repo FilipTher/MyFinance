@@ -1,8 +1,11 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { GoalsService, Goal } from '../../services/goals.service';
 import { CategoriesService } from '../../services/categories.service';
+import { AuthService } from '../../services/auth.service';
 
 interface GoalCategory {
   nazev: string;
@@ -31,7 +34,7 @@ interface GoalForm {
   templateUrl: './goals.html',
   styleUrl: './goals.css'
 })
-export class Goals implements OnInit {
+export class Goals implements OnInit, OnDestroy {
   
   kategorieCilu: GoalCategory[] = [];
   loading = true;
@@ -42,20 +45,45 @@ export class Goals implements OnInit {
   showGoalModal = false;
 
   categoryForm: CategoryForm = { name: '', type: 'expense', icon: 'savings' };
-  goalForm: GoalForm = { name: '', categoryName: '', icon: 'target', targetAmount: 0, savedAmount: 0 };
+  goalForm: GoalForm = { name: '', categoryName: '', icon: 'card_giftcard', targetAmount: 0, savedAmount: 0 };
 
-  availableIcons = ['savings', 'target', 'home', 'school', 'directions_car', 'flight', 'shopping_cart', 'health_and_safety', 'beach_access'];
+  availableIcons = ['savings', 'card_giftcard', 'home', 'school', 'directions_car', 'flight', 'shopping_cart', 'local_hospital', 'beach_access'];
   categories: any[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(
     private goalsService: GoalsService,
     private categoriesService: CategoriesService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.loadGoals();
-    this.loadCategories();
+    if (this.authService.isLoggedIn()) {
+      this.loadGoals();
+      this.loadCategories();
+    }
+
+    // Subscribe to login state changes
+    this.authService.isLoggedIn$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isLoggedIn) => {
+        if (isLoggedIn) {
+          this.loadGoals();
+          this.loadCategories();
+        } else {
+          // Clear data when logging out
+          this.kategorieCilu = [];
+          this.categories = [];
+          this.loading = true;
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadGoals(): void {
@@ -94,7 +122,7 @@ export class Goals implements OnInit {
   }
 
   openGoalModal(): void {
-    this.goalForm = { name: '', categoryName: '', icon: 'target', targetAmount: 0, savedAmount: 0 };
+    this.goalForm = { name: '', categoryName: '', icon: 'card_giftcard', targetAmount: 0, savedAmount: 0 };
     this.showGoalModal = true;
   }
 
