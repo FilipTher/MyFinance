@@ -34,12 +34,7 @@
 }
 
 .add-btn {
-  background-color: #333;
-  color: white;
-  border: 1px solid #555;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 5px;
+  min-width: 128px;
 }
 
 .transaction-item {
@@ -96,129 +91,9 @@
 .divider { margin: 0 5px; color: #444; }
 
 .btn-logout-small {
-  background: none; border: 1px solid #444; color: var(--accent-red);
-  font-size: 10px; padding: 2px 8px; border-radius: 4px; margin-left: 10px; cursor: pointer;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(5px);
-}
-
-.modal-backdrop {
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-.modal-card {
-  position: relative;
-  background-color: var(--bg-card);
-  width: 400px;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-  border: 1px solid #555;
-  z-index: 1001;
-}
-
-.modal-tabs {
-  display: flex;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #555;
-}
-
-.modal-tabs button {
-  flex: 1;
-  background: none; border: none;
-  padding: 10px;
-  color: var(--text-muted);
-  font-size: 16px;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-}
-
-.modal-tabs button.active {
-  color: white;
-  border-bottom-color: var(--accent-green);
-  font-weight: bold;
-}
-
-h2 { text-align: center; margin-bottom: 20px; font-size: 20px; }
-
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
-
-.form-group input {
-  width: 100%;
-  background-color: #222;
-  border: 1px solid #444;
-  padding: 10px;
+  font-size: 10px;
+  padding: 4px 8px;
   border-radius: 6px;
-  color: white;
-  box-sizing: border-box;
-}
-.form-group input:focus { border-color: var(--accent-green); outline: none; }
-
-.form-select {
-  width: 100%;
-  background-color: #222;
-  border: 1px solid #444;
-  padding: 10px;
-  border-radius: 6px;
-  color: white;
-  box-sizing: border-box;
-  cursor: pointer;
+  margin-left: 10px;
 }
 
-.form-select:focus {
-  border-color: var(--accent-green);
-  outline: none;
-}
-
-.form-select option {
-  background-color: #222;
-  color: white;
-}
-
-.checkbox-group {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 12px; color: var(--text-muted);
-}
-
-.btn-primary {
-  width: 100%;
-  background-color: transparent;
-  border: 1px solid var(--text-muted);
-  color: white;
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.btn-primary:hover {
-  background-color: var(--accent-green);
-  border-color: var(--accent-green);
-  color: black;
-}
-
-.btn-secondary {
-  width: 100%;
-  background-color: transparent;
-  border: 1px solid #444;
-  color: var(--text-muted);
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.3s;
-  margin-top: 10px;
-}
-.btn-secondary:hover {
-  background-color: #333;
-  border-color: #555;
-  color: white;
-}

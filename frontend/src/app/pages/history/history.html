@@ -161,6 +161,18 @@
             rows="4"
           ></textarea>
         </div>
+
+        <div class="form-group">
+          <label>Ikona (volitelně)</label>
+          <div class="icon-selector">
+            <button type="button" class="icon-btn" *ngFor="let icon of availableIcons" [class.selected]="editFormData.icon === icon" (click)="editFormData.icon = icon">
+              <i class="material-icons">{{ icon }}</i>
+            </button>
+          </div>
+          <div style="margin-top:8px; display:flex; gap:8px;">
+            <button type="button" class="btn-cancel" (click)="editFormData.icon = ''">Odstranit ikonu</button>
+          </div>
+        </div>
       </div>
 
       <div class="modal-footer">

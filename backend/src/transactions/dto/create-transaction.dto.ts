@@ -3,5 +3,6 @@ export class CreateTransactionDto {
   description: string;
   date: string;
   category: string;
+  icon?: string;
   type: 'expense' | 'income';
 }

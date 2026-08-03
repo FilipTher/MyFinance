@@ -26,7 +26,8 @@ export class TransactionsService {
       date: new Date(createTransactionDto.date),
       type: category.type as 'expense' | 'income',
       category: category,
-      user: { id: userId }
+      user: { id: userId },
+      icon: createTransactionDto.icon ?? undefined
     });
 
     return this.transactionRepository.save(transaction);
@@ -64,6 +65,10 @@ export class TransactionsService {
       }
 
       updateData.category = category;
+    }
+
+    if (updateTransactionDto.icon !== undefined) {
+      updateData.icon = updateTransactionDto.icon;
     }
 
     return this.transactionRepository.update(id, updateData);

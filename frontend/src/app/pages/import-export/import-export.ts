@@ -20,7 +20,6 @@ export class ImportExport implements OnInit {
   isExporting: boolean = false;
   isImporting: boolean = false;
 
-  // Import dialogue properties
   importDialogueOpen: boolean = false;
   pendingImportData: any = null;
 
@@ -59,13 +58,11 @@ export class ImportExport implements OnInit {
       try {
         const importedData = JSON.parse(e.target.result);
         
-        // Validate the imported file structure
         if (!importedData.data || !importedData.data.transactions || !importedData.data.categories) {
           alert('Neplatný formát souboru. Prosím, zkontrolujte, že se jedná o správný export soubor.');
           return;
         }
 
-        // Show custom dialogue
         this.pendingImportData = importedData;
         this.importDialogueOpen = true;
       } catch (error) {
@@ -105,7 +102,6 @@ export class ImportExport implements OnInit {
       return;
     }
 
-    // First delete all current transactions and categories
     this.transactionsService.getTransactions().subscribe({
       next: (currentTransactions: any[]) => {
         if (currentTransactions.length > 0) {
@@ -182,14 +178,12 @@ export class ImportExport implements OnInit {
       return;
     }
 
-    // Fetch existing categories first to check for duplicates
     this.categoriesService.getCategories().subscribe({
       next: (existingCategories: any[]) => {
         this.processCategoriesWithDuplicateCheck(importedData, existingCategories);
       },
       error: (err) => {
         console.error('Chyba při načítání stávajících kategorií:', err);
-        // Continue anyway with empty existing categories
         this.processCategoriesWithDuplicateCheck(importedData, []);
       }
     });
@@ -199,7 +193,6 @@ export class ImportExport implements OnInit {
     const importedTransactions = importedData.data.transactions || [];
     const importedCategories = importedData.data.categories || [];
 
-    // Create a mapping from old category IDs to new category IDs
     const categoryIdMap: { [oldId: number]: number } = {};
     let categoriesCompleted = 0;
 
@@ -257,7 +250,6 @@ export class ImportExport implements OnInit {
       return;
     }
 
-    // Import transactions with mapped category IDs
     importedTransactions.forEach((transaction: any) => {
       const oldCategoryId = transaction.category?.id || transaction.category;
       const newCategoryId = categoryIdMap[oldCategoryId] || oldCategoryId;
@@ -311,7 +303,6 @@ export class ImportExport implements OnInit {
       return;
     }
 
-    // Fetch transactions and categories
     Promise.all([
       this.transactionsService.getTransactions().toPromise(),
       this.categoriesService.getCategories().toPromise()
@@ -329,7 +320,6 @@ export class ImportExport implements OnInit {
         }
       };
 
-      // Download as JSON file
       const jsonString = JSON.stringify(exportData, null, 2);
       const blob = new Blob([jsonString], { type: 'application/json' });
       const url = URL.createObjectURL(blob);

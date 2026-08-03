@@ -2,7 +2,7 @@
   <h1>Dashboard</h1>
   <div class="user-info">
     <div *ngIf="authService.isLoggedIn$ | async; else guestHeader" class="logged-in">
-      <span>👤 {{ authService.currentUserName }}</span>
+      <span>👤 {{ authService.currentUserFullName }}</span>
       <button (click)="authService.logout()" class="btn-logout-small">Odhlásit</button>
     </div>
 
@@ -132,10 +132,19 @@
 
     <div class="form-group">
       <label>Kategorie</label>
-      <select [(ngModel)]="recordData.category" class="form-select">
+      <select [(ngModel)]="recordData.category" class="form-select" (change)="onCategorySelect()">
         <option value="">Vyber kategorii</option>
         <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
       </select>
+    </div>
+
+    <div class="form-group">
+      <label>Ikona (volitelně)</label>
+      <div class="icon-selector">
+        <button type="button" class="icon-btn" *ngFor="let icon of availableIcons" [class.selected]="recordData.icon === icon" (click)="recordData.icon = icon">
+          <i class="material-icons">{{ icon }}</i>
+        </button>
+      </div>
     </div>
 
     <button class="btn-primary" (click)="onSubmitRecord()">Přidat záznam</button>

@@ -3,26 +3,26 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color, #333);
   padding-bottom: 10px;
 }
 
-.actions { display: flex; gap: 10px; }
-
-.btn-secondary {
-  background-color: #444;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
+.actions { 
+  display: flex; 
+  gap: 10px; 
 }
 
-.category-group { margin-bottom: 20px; }
+.btn-secondary {
+  min-width: 108px;
+}
+
+.category-group { 
+  margin-bottom: 20px; 
+}
 
 .category-header {
   font-size: 18px;
-  color: var(--text-muted);
+  color: var(--text-muted, #aaa);
   margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
@@ -49,266 +49,91 @@
   align-items: center;
 }
 
-.delete-category-btn:hover:not(:disabled) {
-  opacity: 1;
-  color: #ff4444;
-}
-
-.delete-category-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
 .goal-row {
-  background-color: var(--bg-card);
-  padding: 15px;
+  background-color: var(--bg-card, #2a2a2a);
+  padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 10px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 140px 110px minmax(180px, 1fr) minmax(200px, 1.2fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  gap: 15px;
 }
 
 .goal-main {
   display: flex;
   align-items: center;
-  width: 120px;
+  gap: 10px;
+  overflow: hidden;
 }
 
-.goal-icon { font-size: 24px; margin-right: 10px; }
-.goal-name { font-weight: bold; }
+.goal-name {
+  font-weight: bold;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-.status-icon { 
-  width: 85px; 
-  text-align: center; 
-  font-size: 12px;
-  color: var(--text-muted);
+.status-container {
+  display: flex;
+  justify-content: center;
+}
+
+.status-badge {
+  font-family: inherit !important;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  background: none !important;
+}
+
+.status-badge.achieved {
+  color: #2ecc71;
+}
+
+.status-badge.unachieved {
+  color: #e74c3c;
 }
 
 .progress-section {
-  flex: 2;
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 12px;
 }
 
 .progress-bar-bg {
   flex: 1;
   height: 8px;
-  background-color: #555;
+  background-color: #444;
   border-radius: 4px;
   overflow: hidden;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background-color: var(--accent-green);
-  transition: width 0.5s ease-in-out;
+  background-color: #2ecc71;
+  transition: width 0.3s ease;
 }
 
 .goal-stats {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   font-size: 12px;
-  color: var(--text-muted);
-  width: 320px;
-  justify-content: flex-end;
-}
-
-.edit-btn {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  opacity: 0.7;
-}
-
-.edit-btn:hover { opacity: 1; }
-
-.delete-btn {
-  background: none;
-  border: none;
-  color: #ff6b6b;
-  cursor: pointer;
-  opacity: 0.7;
-}
-
-.delete-btn:hover { 
-  opacity: 1;
-  color: #ff4444;
-}
-
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: var(--bg-card);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #444;
-}
-
-.modal-header h2 {
-  margin: 0;
-  font-size: 20px;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-size: 24px;
-  opacity: 0.7;
-}
-
-.close-btn:hover {
-  opacity: 1;
-}
-
-.modal-body {
-  padding: 20px;
-  flex: 1;
-}
-
-.modal-footer {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  padding: 20px;
-  border-top: 1px solid #444;
-}
-
-.form-group {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: white;
-}
-
-.form-group input,
-.form-group select {
-  padding: 10px 12px;
-  background-color: #333;
-  border: 1px solid #555;
-  border-radius: 5px;
-  color: white;
-  font-size: 14px;
-}
-
-.form-group input::placeholder,
-.form-group select {
   color: #aaa;
+  flex-wrap: wrap;
 }
 
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 2px rgba(100, 150, 255, 0.2);
-}
-
-.icon-selector {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-}
-
-.icon-btn {
-  padding: 12px;
-  background-color: #333;
-  border: 2px solid #555;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
+.row-actions {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  min-width: 48px;
-  min-height: 48px;
+  gap: 8px;
+  justify-content: flex-end;
 }
 
-.icon-btn i {
-  font-size: 24px;
-}
-
-.icon-btn:hover {
-  background-color: #444;
-  border-color: #666;
-}
-
-.icon-btn.selected {
-  background-color: var(--accent-blue);
-  border-color: var(--accent-blue);
-}
-
-.btn-cancel {
-  background-color: #555;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
-
-.btn-cancel:hover:not(:disabled) {
-  background-color: #666;
-}
-
-.btn-cancel:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background-color: var(--accent-green);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: var(--accent-green-dark, #4caf50);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.edit-btn,
+.delete-btn {
+  min-width: 90px;
+  padding: 7px 12px;
 }

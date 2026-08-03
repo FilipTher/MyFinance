@@ -28,6 +28,10 @@ export class History implements OnInit, OnDestroy {
   allTransactions: any[] = [];
   filteredTransactions: any[] = [];
   categories: Category[] = [];
+  availableIcons: string[] = [
+    'attach_money', 'shopping_cart', 'local_grocery_store', 'restaurant', 'local_cafe',
+    'directions_car', 'flight', 'home', 'paid', 'local_hospital', 'movie', 'fitness_center'
+  ];
   private destroy$ = new Subject<void>();
 
   editModalOpen = false;
@@ -42,19 +46,16 @@ export class History implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Load data if user is already logged in
     if (this.authService.isLoggedIn()) {
       this.loadData();
     }
 
-    // Subscribe to login state changes
     this.authService.isLoggedIn$
       .pipe(takeUntil(this.destroy$))
       .subscribe((isLoggedIn) => {
         if (isLoggedIn) {
           this.loadData();
         } else {
-          // Clear data when logging out
           this.allTransactions = [];
           this.categories = [];
           this.cd.markForCheck();
@@ -93,32 +94,31 @@ export class History implements OnInit, OnDestroy {
         next: (data: Transaction[]) => {
           this.allTransactions = data.map(t => {
             const categoryName = (t.category as any)?.name || 'Nezařazeno';
-            return {
-              id: t.id,
-              vybrano: false,
-              nazev: categoryName,
-              castka: t.type === 'income' ? parseInt(t.amount as any) : -parseInt(t.amount as any),
-              typ: t.type === 'income' ? 'prijem' : 'vydaj',
-              datum: t.date,
-              datumFormatovano: new Date(t.date).toLocaleDateString('cs-CZ'),
-              popis: t.description || '-',
-              ikona: 'attach_money',
-              barva: t.type === 'income' ? 'green' : 'red'
-            };
+              const icon = (t as any).icon || (t.category as any)?.icon || 'attach_money';
+              return {
+                id: t.id,
+                vybrano: false,
+                nazev: categoryName,
+                castka: t.type === 'income' ? parseInt(t.amount as any) : -parseInt(t.amount as any),
+                typ: t.type === 'income' ? 'prijem' : 'vydaj',
+                datum: t.date,
+                datumFormatovano: new Date(t.date).toLocaleDateString('cs-CZ'),
+                popis: t.description || '-',
+                ikona: icon,
+                categoryId: (t.category as any)?.id,
+                iconSource: (t as any).icon,
+                barva: t.type === 'income' ? 'green' : 'red'
+              };
           });
           
-          // Set default date range based on all transactions
           if (this.allTransactions.length > 0) {
-            // Get all dates from transactions
             const dates = this.allTransactions.map(t => new Date(t.datum));
             const earliestDate = new Date(Math.min(...dates.map(d => d.getTime())));
             const latestDate = new Date(Math.max(...dates.map(d => d.getTime())));
             
-            // Format dates for input fields (YYYY-MM-DD)
             this.filtry.datumOd = earliestDate.toISOString().split('T')[0];
             this.filtry.datumDo = latestDate.toISOString().split('T')[0];
           } else {
-            // If no transactions, set today as default
             const today = new Date();
             this.filtry.datumDo = today.toISOString().split('T')[0];
             this.filtry.datumOd = today.toISOString().split('T')[0];
@@ -137,29 +137,24 @@ export class History implements OnInit, OnDestroy {
 
   applyFilters() {
     this.filteredTransactions = this.allTransactions.filter(t => {
-      // Search filter
       if (this.filtry.hledat && !t.popis.toLowerCase().includes(this.filtry.hledat.toLowerCase()) &&
           !t.nazev.toLowerCase().includes(this.filtry.hledat.toLowerCase())) {
         return false;
       }
 
-      // Type filter
       if (this.filtry.typ !== 'vse' && t.typ !== this.filtry.typ) {
         return false;
       }
 
-      // Category filter
       if (this.filtry.kategorie !== 'vse' && t.nazev !== this.filtry.kategorie) {
         return false;
       }
 
-      // Amount range filter
       const absoluteAmount = Math.abs(t.castka);
       if (absoluteAmount < this.filtry.castkaMin || absoluteAmount > this.filtry.castkaMax) {
         return false;
       }
 
-      // Date range filter
       if (this.filtry.datumOd || this.filtry.datumDo) {
         const transactionDate = new Date(t.datum);
         
@@ -210,7 +205,6 @@ export class History implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            // Remove deleted transactions from the list
             this.allTransactions = this.allTransactions.filter(
               t => !ids.includes(t.id)
             );
@@ -240,7 +234,8 @@ export class History implements OnInit, OnDestroy {
       description: this.editingTransaction.popis,
       date: this.editingTransaction.datum,
       category: originalTransaction?.categoryId || '',
-      type: this.editingTransaction.typ === 'prijem' ? 'income' : 'expense'
+      type: this.editingTransaction.typ === 'prijem' ? 'income' : 'expense',
+      icon: originalTransaction?.iconSource || (this.categories.find(c => c.id === originalTransaction?.categoryId)?.icon) || ''
     };
     
     this.editModalOpen = true;
@@ -263,14 +258,14 @@ export class History implements OnInit, OnDestroy {
       description: this.editFormData.description,
       date: this.editFormData.date,
       category: this.editFormData.category,
-      type: this.editFormData.type
+      type: this.editFormData.type,
+      icon: this.editFormData.icon || null
     };
 
     this.transactionsService.updateTransaction(this.editingTransaction.id, updateData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          // Update the transaction in the list
           const index = this.allTransactions.findIndex(t => t.id === this.editingTransaction.id);
           if (index !== -1) {
             const categoryName = this.categories.find(c => c.id === this.editFormData.category)?.name || 'Nezařazeno';
@@ -282,7 +277,9 @@ export class History implements OnInit, OnDestroy {
               datum: this.editFormData.date,
               datumFormatovano: new Date(this.editFormData.date).toLocaleDateString('cs-CZ'),
               popis: this.editFormData.description || '-',
-              categoryId: this.editFormData.category
+              categoryId: this.editFormData.category,
+              ikona: this.editFormData.icon || (this.categories.find(c => c.id === this.editFormData.category)?.icon) || 'attach_money',
+              iconSource: this.editFormData.icon || null
             };
           }
           this.applyFilters();

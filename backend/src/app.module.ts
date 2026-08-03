@@ -10,7 +10,7 @@ import { GoalsModule } from './goals/goals.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'sqlite',
+      type: 'better-sqlite3',
       database: 'finance.db',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,

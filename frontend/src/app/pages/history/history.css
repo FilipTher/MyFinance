@@ -107,50 +107,19 @@ input[type="range"] { width: 100%; accent-color: var(--text-muted); }
 }
 
 .btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  min-width: 92px;
+  padding: 8px 14px;
 }
 
-.btn-edit {
-  background-color: var(--accent-blue);
-  color: white;
-}
-
-.btn-edit:hover:not(:disabled) {
-  background-color: #0066cc;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
-}
-
+.btn-edit,
 .btn-delete {
-  background-color: var(--accent-red);
-  color: white;
-}
-
-.btn-delete:hover:not(:disabled) {
-  background-color: #cc3333;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(204, 51, 51, 0.3);
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  min-width: 90px;
 }
 
 .btn i {
   font-size: 18px;
 }
 
-/* Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;

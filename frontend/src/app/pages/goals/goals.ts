@@ -64,7 +64,6 @@ export class Goals implements OnInit, OnDestroy {
       this.loadCategories();
     }
 
-    // Subscribe to login state changes
     this.authService.isLoggedIn$
       .pipe(takeUntil(this.destroy$))
       .subscribe((isLoggedIn) => {
@@ -72,7 +71,6 @@ export class Goals implements OnInit, OnDestroy {
           this.loadGoals();
           this.loadCategories();
         } else {
-          // Clear data when logging out
           this.kategorieCilu = [];
           this.categories = [];
           this.loading = true;
@@ -164,7 +162,6 @@ export class Goals implements OnInit, OnDestroy {
     if (this.isDeleting || !confirm(`Opravdu chcete smazat kategorii "${categoryName}"? Všechny cíle v této kategorii budou smazány.`)) return;
     
     this.isDeleting = true;
-    // Find category by name and delete it
     this.categoriesService.getCategories('goal').subscribe({
       next: (categories: any[]) => {
         const category = categories.find(c => c.name === categoryName);
@@ -226,7 +223,6 @@ export class Goals implements OnInit, OnDestroy {
     this.isSubmitting = true;
     
     if (this.goalForm.id) {
-      // Update existing goal
       this.goalsService.updateGoal(this.goalForm.id, {
         name: this.goalForm.name,
         categoryName: this.goalForm.categoryName,
@@ -247,7 +243,6 @@ export class Goals implements OnInit, OnDestroy {
         }
       });
     } else {
-      // Create new goal
       this.goalsService.createGoal({
         name: this.goalForm.name,
         categoryName: this.goalForm.categoryName,

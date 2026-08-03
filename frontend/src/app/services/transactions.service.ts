@@ -9,6 +9,7 @@ export interface Transaction {
   description: string;
   date: string;
   category: any;
+  icon?: string;
   type: 'expense' | 'income';
 }
 

@@ -24,4 +24,7 @@ export class Transaction {
 
   @ManyToOne(() => Category, category => category.transactions, { onDelete: 'CASCADE' })
   category: Category;
+
+  @Column({ type: 'varchar', nullable: true })
+  icon?: string;
 }

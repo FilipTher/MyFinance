@@ -5,46 +5,7 @@
 <div class="settings-container">
 
   <div class="settings-card">
-    <h3>Aplikace</h3>
-    
-    <div class="setting-row">
-      <div class="label-group">
-        <i class="material-icons icon">payments</i>
-        <span>Hlavní měna</span>
-      </div>
-      <select [(ngModel)]="nastaveni.mena">
-        <option value="CZK">CZK (Kč)</option>
-        <option value="EUR">EUR (€)</option>
-        <option value="USD">USD ($)</option>
-      </select>
-    </div>
-
-    <div class="setting-row">
-      <div class="label-group">
-        <i class="material-icons icon">translate</i>
-        <span>Jazyk aplikace</span>
-      </div>
-      <select [(ngModel)]="nastaveni.jazyk">
-        <option value="cz">Čeština</option>
-        <option value="en">English</option>
-      </select>
-    </div>
-
-    <div class="setting-row">
-      <div class="label-group">
-        <i class="material-icons icon">dark_mode</i>
-        <span>Tmavý režim</span>
-      </div>
-      <label class="switch">
-        <input type="checkbox" [(ngModel)]="nastaveni.tmavyRezim">
-        <span class="slider round"></span>
-      </label>
-    </div>
-  </div>
-
-
-  <div class="settings-card">
-    <h3>Peníze</h3>
+    <h3>Finance</h3>
     
     <div class="setting-row">
       <div class="label-group">
@@ -78,7 +39,7 @@
 
   <div class="settings-card danger-zone">
     <h3>Správa dat</h3>
-    <p class="warning-text">Pokud smažete data, nebude možné je obnovit.</p>
+    <p class="warning-text">Tato akce smaže všechna data. Opravdu chcete pokračovat?</p>
     
     <div class="buttons-row">
       <button class="btn-save" (click)="ulozitNastaveni()">Uložit změny</button>

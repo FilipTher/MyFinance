@@ -18,24 +18,25 @@
 }
 
 .side-menu button {
+  justify-content: flex-start;
+  width: 100%;
+  padding: 11px 12px;
   background-color: transparent;
-  border: 1px solid var(--border-color);
   color: var(--text-muted);
-  padding: 15px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-  text-align: center;
+  border-color: var(--border-color);
+  text-align: left;
 }
 
 .side-menu button:hover {
-  background-color: rgba(255,255,255, 0.05);
+  background-color: rgba(255,255,255, 0.08);
+  border-color: #666;
+  color: white;
 }
 
 .side-menu button.active {
-  background-color: #444;
+  background-color: rgba(46, 204, 113, 0.16);
   color: white;
-  border-color: #666;
+  border-color: var(--accent-green);
 }
 
 .content-area {
@@ -92,17 +93,13 @@
 }
 
 .action-btn {
-  font-size: 24px;
-  background: none;
-  border: none;
+  min-width: 120px;
+  padding: 9px 16px;
   color: var(--text-main);
-  cursor: pointer;
-  padding: 10px 40px;
 }
 
 .action-btn:hover {
   color: white;
-  text-shadow: 0 0 10px rgba(255,255,255, 0.5);
 }
 
 .action-btn:disabled {
@@ -127,7 +124,6 @@
   cursor: pointer;
 }
 
-/* Modal Dialogue Styles */
 .dialogue-overlay {
   position: fixed;
   top: 0;
@@ -183,46 +179,23 @@
 }
 
 .dialogue-buttons button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
-  flex: 1;
-  min-width: 120px;
-  justify-content: center;
+  flex: 1 1 140px;
+  min-width: 130px;
 }
 
 .btn-replace {
-  background-color: #dc3545;
-  color: white;
-}
-
-.btn-replace:hover {
-  background-color: #c82333;
+  color: var(--accent-red);
+  border-color: var(--accent-red);
 }
 
 .btn-add {
-  background-color: #28a745;
-  color: white;
-}
-
-.btn-add:hover {
-  background-color: #218838;
+  color: var(--accent-green);
+  border-color: var(--accent-green);
 }
 
 .btn-cancel {
-  background-color: #6c757d;
-  color: white;
-}
-
-.btn-cancel:hover {
-  background-color: #5a6268;
+  color: var(--text-main);
+  border-color: var(--border-color);
 }
 
 .dialogue-buttons .material-icons {

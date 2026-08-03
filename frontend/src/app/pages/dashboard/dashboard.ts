@@ -38,10 +38,16 @@ export class Dashboard implements OnInit, OnDestroy {
     description: '',
     date: '',
     category: '',
+    icon: '',
     type: 'expense'
   };
 
   categories: Category[] = [];
+
+  availableIcons: string[] = [
+    'attach_money', 'shopping_cart', 'card_giftcard', 'restaurant', 'local_cafe',
+    'directions_car', 'flight', 'home', 'paid', 'local_hospital', 'movie', 'fitness_center'
+  ];
 
   transakce: any[] = [];
 
@@ -60,7 +66,6 @@ export class Dashboard implements OnInit, OnDestroy {
       this.loadGoals();
     }
 
-    // Subscribe to login state changes
     this.authService.isLoggedIn$
       .pipe(takeUntil(this.destroy$))
       .subscribe((isLoggedIn) => {
@@ -68,7 +73,6 @@ export class Dashboard implements OnInit, OnDestroy {
           this.loadCategories();
           this.loadGoals();
         } else {
-          // Clear data when logging out
           this.categories = [];
           this.transakce = [];
           this.goals = [];
@@ -102,13 +106,16 @@ export class Dashboard implements OnInit, OnDestroy {
     this.transactionsService.getTransactions().subscribe({
       next: (data: Transaction[]) => {
         this.transakce = data.map(t => {
-          const categoryName = (t.category as any)?.name || 'Nezařazeno';
+          const categoryId = typeof t.category === 'object' ? (t.category as any).id : t.category;
+          const categoryObj = this.categories.find(c => String(c.id) === String(categoryId));
+          const categoryName = categoryObj?.name || 'Nezařazeno';
+          const icon = (t as any).icon || categoryObj?.icon || 'attach_money';
           return {
             nazev: categoryName,
-            castka: t.type === 'income' ? parseInt(t.amount as any) : -parseInt(t.amount as any),
+            castka: t.type === 'income' ? parseFloat(t.amount as any) : -parseFloat(t.amount as any),
             datum: t.date,
             popis: t.description,
-            ikona: 'attach_money',
+            ikona: icon,
             barva: t.type === 'income' ? 'green' : 'red'
           };
         });
@@ -149,7 +156,6 @@ export class Dashboard implements OnInit, OnDestroy {
   calculateBalance() {
     const initialBalance = this.authService.getBalance();
     const transactionSum = this.transakce.reduce((sum, t) => sum + t.castka, 0);
-    // Subtract the total saved in goals from the balance
     this.currentBalance = initialBalance + transactionSum - this.totalSavedInGoals;
   }
 
@@ -177,12 +183,21 @@ export class Dashboard implements OnInit, OnDestroy {
       description: '',
       date: '',
       category: '',
+      icon: '',
       type: 'expense'
     };
   }
 
   onAddRecord() {
     this.openAddRecordModal();
+  }
+
+  onCategorySelect() {
+    const catId = this.recordData.category;
+    const cat = this.categories.find(c => String(c.id) === String(catId));
+    if (cat && cat.icon && !this.recordData.icon) {
+      this.recordData.icon = cat.icon;
+    }
   }
 
   onSubmitRecord() {
@@ -193,6 +208,7 @@ export class Dashboard implements OnInit, OnDestroy {
       description: this.recordData.description,
       date: this.recordData.date,
       category: this.recordData.category,
+      icon: this.recordData.icon || undefined,
       type: this.recordData.type as 'expense' | 'income'
     };
 

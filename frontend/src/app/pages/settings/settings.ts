@@ -17,8 +17,6 @@ export class Settings implements OnInit {
   
   nastaveni = {
     mena: 'CZK',
-    jazyk: 'cz',
-    tmavyRezim: true,
     initialBalance: 0
   };
 
@@ -44,8 +42,6 @@ export class Settings implements OnInit {
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
       this.nastaveni.mena = parsed.mena || 'CZK';
-      this.nastaveni.jazyk = parsed.jazyk || 'cz';
-      this.nastaveni.tmavyRezim = parsed.tmavyRezim !== undefined ? parsed.tmavyRezim : true;
     }
   }
 
@@ -84,20 +80,9 @@ export class Settings implements OnInit {
 
   ulozitNastaveni() {
     const settings = {
-      mena: this.nastaveni.mena,
-      jazyk: this.nastaveni.jazyk,
-      tmavyRezim: this.nastaveni.tmavyRezim
+      mena: this.nastaveni.mena
     };
     localStorage.setItem('myfinance_settings', JSON.stringify(settings));
-    
-    if (this.nastaveni.tmavyRezim) {
-      document.body.style.backgroundColor = '#1a1a1a';
-      document.body.style.color = '#ffffff';
-    } else {
-      document.body.style.backgroundColor = '#ffffff';
-      document.body.style.color = '#000000';
-    }
-    
     alert('Nastavení bylo úspěšně uloženo.');
   }
 
@@ -110,7 +95,6 @@ export class Settings implements OnInit {
         return;
       }
 
-      // First, delete all transactions
       this.transactionsService.getTransactions().subscribe({
         next: (transactions: any[]) => {
           const deleteTransactionsPromise = transactions.length > 0 
@@ -124,7 +108,6 @@ export class Settings implements OnInit {
             : Promise.resolve(true);
 
           deleteTransactionsPromise.then(() => {
-            // Then delete all categories
             this.categoriesService.getCategories().subscribe({
               next: (categories: any[]) => {
                 if (categories.length === 0) {

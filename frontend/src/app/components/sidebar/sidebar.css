@@ -14,28 +14,22 @@
 }
 
 button {
-  background: #444;
-  border: none;
-  color: var(--text-muted);
   width: 100%;
+  justify-content: flex-start;
   text-align: left;
-  padding: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 8px;
+  padding: 11px 12px;
   margin-bottom: 10px;
+  background-color: transparent;
+  color: var(--text-muted);
+  border-color: var(--border-color);
 }
 
 button:hover {
-  background-color: rgba(255,255,255, 0.1);
+  background-color: rgba(255,255,255, 0.08);
   color: var(--text-main);
+  border-color: #666;
 }
 
-button.active {
-  background-color: #444;
-  color: var(--text-main);
-  font-weight: bold;
-}
 
 hr {
   border: 0;

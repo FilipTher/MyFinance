@@ -43,11 +43,9 @@ export class CategoriesService {
   }
 
   async remove(id: number) {
-    // Get the category to find its name
     const category = await this.categoryRepository.findOne({ where: { id } });
     
     if (category && category.categoryFor === 'goal') {
-      // Delete all goals associated with this category
       await this.goalRepository.delete({ categoryName: category.name });
     }
     
